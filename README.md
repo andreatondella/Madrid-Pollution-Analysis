@@ -10,8 +10,8 @@
 + Hourly data is available for every pollutant, for every station, for every hour, for every day of each month-year.  
 
 * You will also find two additional datasets: 
-..* Weather.xlsx, containing daily time series for min, average, and max temperature, precipitations, humidity and wind in Madrid. 
-..* parameters.png (image), containing the key for every pollutant code (eg. “08” -> NO2)  
+...* Weather.xlsx, containing daily time series for min, average, and max temperature, precipitations, humidity and wind in Madrid. 
+...* parameters.png (image), containing the key for every pollutant code (eg. “08” -> NO2)  
 
 * The scope of the statistical analysis is open, so each group decides the deepness of it. At least, you should:  
 ..* Read and process all the information in the most automated manner.  
