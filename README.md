@@ -4,10 +4,10 @@
 * The work consists in analyzing a big dataset with hourly pollution data from Madrid, in the period 2011 to 2016. 
 
 * In the content area “workgroup_assignment” at the campus there’s 72 csv files, each one containing a piece of the information.     Specifically, each csv contains the raw data for a concrete month of a concrete year (6 years, 12 months per year). 
-⋅⋅*Raw data is at an hourly level. 
-..* There are many stations that measure air pollutants in Madrid (around 24). 
-..* There are several pollutants measured (around 10).  
-..* Hourly data is available for every pollutant, for every station, for every hour, for every day of each month-year.  
++ Raw data is at an hourly level. 
++ There are many stations that measure air pollutants in Madrid (around 24). 
++ There are several pollutants measured (around 10).  
++ Hourly data is available for every pollutant, for every station, for every hour, for every day of each month-year.  
 
 * You will also find two additional datasets: 
 ..* Weather.xlsx, containing daily time series for min, average, and max temperature, precipitations, humidity and wind in Madrid. 
