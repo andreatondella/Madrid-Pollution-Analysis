@@ -1,9 +1,6 @@
 # R_group_assignment
-* Item 1
-* Item 2
-    + Item 2a
-    + Item 2b
-# Analyzing Pollution Data in Madrid
+
+## Analyzing Pollution Data in Madrid
 * The work consists in analyzing a big dataset with hourly pollution data from Madrid, in the period 2011 to 2016. 
 
 * In the content area “workgroup_assignment” at the campus there’s 72 csv files, each one containing a piece of the information.     Specifically, each csv contains the raw data for a concrete month of a concrete year (6 years, 12 months per year). 
