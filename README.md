@@ -1,8 +1,8 @@
 # R_group_assignment
 * Item 1
 * Item 2
-+ Item 2a
-+ Item 2b
+    + Item 2a
+    + Item 2b
 # Analyzing Pollution Data in Madrid
 * The work consists in analyzing a big dataset with hourly pollution data from Madrid, in the period 2011 to 2016. 
 
