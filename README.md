@@ -17,19 +17,19 @@
     + parameters.png (image), containing the key for every pollutant code (eg. “08” -> NO2)  
 
 * The scope of the statistical analysis is open, so each group decides the deepness of it. At least, you should:  
-    1. Read and process all the information in the most automated manner.  
-    2. Create a dataset with daily information on NO2, SO2, O3, PM2.5, and all the weather variables. 
-    3. Analyze the relations among this variables, creating a descriptive analysis and a revealing visualization, showing also the evolution  of each series over time.  
-    4. Create a multiple linear regression explaining NO2 with the rest of the variables. 
-    5. Create a report (doc/pdf/Rmarkdown) with code, results and conclusion for each step of the project.  
+    + Read and process all the information in the most automated manner.  
+    + Create a dataset with daily information on NO2, SO2, O3, PM2.5, and all the weather variables. 
+    + Analyze the relations among this variables, creating a descriptive analysis and a revealing visualization, showing also the evolution  of each series over time.  
+    + Create a multiple linear regression explaining NO2 with the rest of the variables. 
+    + Create a report (doc/pdf/Rmarkdown) with code, results and conclusion for each step of the project.  
 
 * “At least” means you are welcome to explore the possibilities of creating an additional analysis at a weekly or monthly level, work with Min, Mean and Max meassures on the pollutants, create a set of possible models, interactive charts etc…   
 
 * So there are four parts in which this project can be divided in (besides from the report): 
-    + Reading every piece of raw data and creating the whole initial raw_data set.  
-    + Processing raw_data to create a daily dataset, by averaging each hourly measure, and containing also the weather variables and the names for each pollutant parameter.  
-    + Generating a descriptive analysis with correlation matrices, scatterplots, time series charts … 
-    + Creating a linear regression model that explains NO2.  
+    1. Reading every piece of raw data and creating the whole initial raw_data set.  
+    2. Processing raw_data to create a daily dataset, by averaging each hourly measure, and containing also the weather variables and the names for each pollutant parameter.  
+    3. Generating a descriptive analysis with correlation matrices, scatterplots, time series charts … 
+    4. Creating a linear regression model that explains NO2.  
 * I may randomly select some of you individually to explain how any of these parts of the code work, and what’s the purpose of it.  
 
 * The final report may be done in Rmarkdown; this way, you can have code, comments and conclusions on just a single document. If you go with a standard .doc / .ppt / or .pdf, I will ask you to sumbit all .R scripts too.   
