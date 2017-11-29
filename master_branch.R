@@ -2,6 +2,7 @@
 # R Group Assignment
 # GitHub Master Branch
 # ----------------------------
+#whats up
 
 # LIBRARIES -> space where to call new libraries
 library(data.table)
