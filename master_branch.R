@@ -6,6 +6,7 @@
 
 # LIBRARIES -> space where to call new libraries
 library(data.table)
+library(openair)
 
 # Reading every piece of raw data and creating the whole initial raw_data set.
 
