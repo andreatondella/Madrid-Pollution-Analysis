@@ -2,15 +2,14 @@
 # R Group Assignment
 # GitHub Master Branch
 # ----------------------------
-#whats up
-# Deo: Whatsup?
+#Check dygraphs
 
 # LIBRARIES -> space where to call new libraries
 library(data.table)
 
 # Reading every piece of raw data and creating the whole initial raw_data set.
 
-
+## setwd("C:/Users/PaU/Documents/R/Saved Items")  ## So I can load the csv's
 #Just some trials
 df1 <- read.csv('./dataset/data/hourly_data_11_1.csv')
 df2 <- read.csv('./dataset/data/hourly_data_11_2.csv')
