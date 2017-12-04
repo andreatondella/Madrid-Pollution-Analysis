@@ -7,8 +7,19 @@
 
 # LIBRARIES -> space where to call new libraries
 library(data.table)
+filenames <- sapply(c(11:16), function(x) { paste(paste("hourly_data", as.character(x), as.character(1:12), sep="_"), '.csv', sep='')})
+# 2011 => filenames[,1]
+# 2016 => filenames[,6]
+dflist <- list()
+for(i in 1:6) {
+  #print(filenames[i])
+  df <- read.csv(filenames[i])
+  dflist <- c(dflist, df)
+}
+structure(dflist)
 
 # Reading every piece of raw data and creating the whole initial raw_data set.
+#paste(as.character(c(11:16)), as.character(1:12), sep="_")
 
 
 #Just some trials
