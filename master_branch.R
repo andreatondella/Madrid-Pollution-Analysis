@@ -9,13 +9,18 @@
 library(data.table)
 
 # Read all files into one data table. The verbose way.
-years <- c(11:16)
+years <- c(11:12)
 months <- c(1:12)
 hours <- c(1:24)
-data <- data.table(day=integer(), hour=integer(), station=integer(), parameter=integer(), value=numeric())
+data <- data.table(year=integer(), month=integer(), day=integer(), hour=integer(), station=integer(), parameter=integer(), value=numeric())
+#data <- data.frame(day=integer(), hour=integer(), station=integer(), parameter=integer(), value=numeric())
 for(i in years) {
   for(j in months) {
     df <- read.csv(paste(paste("hourly_data", as.character(i), as.character(j), sep='_'), ".csv", sep=''))
+    yr <- rep(i + 2000, nrow(df))
+    mnth <- rep(j, nrow(df))
+    dftemp <- data.frame(year=yr, month=mnth)
+    df <- cbind(dftemp, df)
     data <- rbind(data, df)
   }
 }
