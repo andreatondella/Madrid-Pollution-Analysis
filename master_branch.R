@@ -26,6 +26,27 @@ for(i in years) {
 }
 # Apparantly there are 6,471,098 rows and 5 columns
 
+# Read all files into one data table. Using sapply.
+library(data.table)
+data <- data.table(year=integer(), month=integer(), day=integer(), hour=integer(), station=integer(), parameter=integer(), value=numeric())
+years <- c(11:12)
+months <- c(1:12)
+filenameprefix <- "hourly_data"
+
+sapply(years, function(x) {
+  sapply(months, function(y) {
+    filename <- paste(paste(filenameprefix, as.character(x), as.character(y), sep="_"), '.csv', sep='')
+    df <- read.csv(filename)
+    yr <- rep(x+2000, nrow(df))
+    mnth <- rep(y, nrow(df))
+    dftemp <- data.frame(year=yr, month=mnth)
+    df <- cbind(dftemp, df)
+    data <<- rbind(data, df)
+  })
+})
+head(data)
+tail(data)
+
 
 filenames <- sapply(c(11:16), function(x) { paste(paste("hourly_data", as.character(x), as.character(1:12), sep="_"), '.csv', sep='')})
 # 2011 => filenames[,1]
