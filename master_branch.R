@@ -7,16 +7,45 @@
 
 # LIBRARIES -> space where to call new libraries
 library(data.table)
+
+# Read all files into one data table. The verbose way.
+years <- c(11:16)
+months <- c(1:12)
+hours <- c(1:24)
+data <- data.table(day=integer(), hour=integer(), station=integer(), parameter=integer(), value=numeric())
+for(i in years) {
+  for(j in months) {
+    df <- read.csv(paste(paste("hourly_data", as.character(i), as.character(j), sep='_'), ".csv", sep=''))
+    data <- rbind(data, df)
+  }
+}
+# Apparantly there are 6,471,098 rows and 5 columns
+
+
 filenames <- sapply(c(11:16), function(x) { paste(paste("hourly_data", as.character(x), as.character(1:12), sep="_"), '.csv', sep='')})
 # 2011 => filenames[,1]
 # 2016 => filenames[,6]
 dflist <- list()
+dflist <- sapply(c(1:6), function(x) {
+  dfilist <- list()
+  for(i in 1:12) {
+    df <- read.csv(filenames[i, x])
+    dflist <- c(dflist, df)
+  }
+  return(dflist)
+  #dflist <- c(dflist, dfilist)
+  })
+
+head(dflist)
+
+filenames[1,2]
+head(df)
 for(i in 1:6) {
   #print(filenames[i])
   df <- read.csv(filenames[i])
   dflist <- c(dflist, df)
 }
-structure(dflist)
+
 
 # Reading every piece of raw data and creating the whole initial raw_data set.
 #paste(as.character(c(11:16)), as.character(1:12), sep="_")
