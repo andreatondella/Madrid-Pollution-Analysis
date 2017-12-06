@@ -2,11 +2,11 @@
 # R Group Assignment
 # GitHub Master Branch
 # ----------------------------
-#whats up
-# Deo: Whatsup?
+#Check dygraphs
 
 # LIBRARIES -> space where to call new libraries
 library(data.table)
+library(openair)
 
 # Read all files into one data table. The verbose way.
 years <- c(11:12)
@@ -76,7 +76,7 @@ for(i in 1:6) {
 # Reading every piece of raw data and creating the whole initial raw_data set.
 #paste(as.character(c(11:16)), as.character(1:12), sep="_")
 
-
+## setwd("C:/Users/PaU/Documents/R/Saved Items")  ## So I can load the csv's
 #Just some trials
 df1 <- read.csv('./dataset/data/hourly_data_11_1.csv')
 df2 <- read.csv('./dataset/data/hourly_data_11_2.csv')
