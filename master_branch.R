@@ -8,7 +8,9 @@
 library(data.table)
 library(openair)
 
-# First push didn't work. Trying again.
+# Reading every piece of raw data and creating the whole initial raw_data set.
+
+
 # Read all files into one data table. The verbose way.
 years <- c(11:12)
 months <- c(1:12)
@@ -72,41 +74,6 @@ for(i in 1:6) {
   df <- read.csv(filenames[i])
   dflist <- c(dflist, df)
 }
-
-
-# Reading every piece of raw data and creating the whole initial raw_data set.
-#paste(as.character(c(11:16)), as.character(1:12), sep="_")
-
-## setwd("C:/Users/PaU/Documents/R/Saved Items")  ## So I can load the csv's
-#Just some trials
-df1 <- read.csv('./dataset/data/hourly_data_11_1.csv')
-df2 <- read.csv('./dataset/data/hourly_data_11_2.csv')
-df3 <- read.csv('./dataset/data/hourly_data_11_3.csv')
-
-str(df1)
-str(df2)
-str(df3)
-
-df12 <- rbind(df1, df2, df3)
-
-<<<<<<< HEAD
-#Yet another upload trial
-
-=======
-  >>>>>>> d6fff266c8adc5cf0d153f0bd4661f90f27270ce
-#for (i in (11:16)) {
-# j=1
-#for (j in 1:12) {
-#    anno.list <- list(read.csv(paste("./dataset/data/hourly_data_11_", j, ".csv", sep = "")))
-
-#print(j)
-#print(paste(".dataset/data/hourly_data_11_", j, ".csv", sep = ""))
-#  }
-
-#}
-
-
-
 
 
 # Processing raw_data to create a daily dataset, by averaging each hourly measure, 
