@@ -10,7 +10,9 @@
 library(data.table)
 library(openair)
 
-# First push didn't work. Trying again.
+# Reading every piece of raw data and creating the whole initial raw_data set.
+
+
 # Read all files into one data table. The verbose way.
 years <- c(11:12)
 months <- c(1:12)
@@ -49,9 +51,6 @@ sapply(years, function(x) {
 })
 head(data)
 tail(data)
-
-
-
 
 # TODO: Processing raw_data to create a daily dataset, by averaging each hourly measure, 
 # and containing also the weather variables and the names for each pollutant parameter.
