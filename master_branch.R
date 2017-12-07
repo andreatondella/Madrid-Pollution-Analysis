@@ -57,9 +57,23 @@ data[is.na(value), 'value'] <- 0
 stationlist <- unique(data$station)
 # List of unique parameters
 paramlist <- unique(data$parameter)
+# Print unique parameter recorded per station
 for(x in stationlist) {
   print(x)
   print(data[station == x, unique(parameter)])
+}
+
+# Create list of data tables per station
+perstationdata <- list()
+length(stationlist)
+for(x in stationlist) {
+  perstationdata[[length(perstationdata) + 1]]  <- data[station == x,]
+}
+# Create list of data tables per parameter
+perparameterdata <- list()
+length(perparameterdata)
+for(x in paramlist) {
+  perparameterdata[[length(perparameterdata) + 1]] <- data[parameter == x]
 }
 
 # TODO: Processing raw_data to create a daily dataset, by averaging each hourly measure, 
