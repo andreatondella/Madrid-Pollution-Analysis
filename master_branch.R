@@ -51,6 +51,16 @@ sapply(years, function(x) {
 })
 head(data)
 tail(data)
+data[is.na(value), 'value'] <- 0
+
+# List of unique stations
+stationlist <- unique(data$station)
+# List of unique parameters
+paramlist <- unique(data$parameter)
+for(x in stationlist) {
+  print(x)
+  print(data[station == x, unique(parameter)])
+}
 
 # TODO: Processing raw_data to create a daily dataset, by averaging each hourly measure, 
 # and containing also the weather variables and the names for each pollutant parameter.
