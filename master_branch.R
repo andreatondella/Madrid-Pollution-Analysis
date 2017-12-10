@@ -9,6 +9,7 @@
 # Reading every piece of raw data and creating the whole initial raw_data set.
 library(data.table)
 library(openair)
+library(readxl)
 
 # Reading every piece of raw data and creating the whole initial raw_data set.
 
@@ -77,21 +78,25 @@ for(x in paramlist) {
   perparameterdata[[length(perparameterdata) + 1]] <- data[parameter == x]
 }
 
-# Read csv with long/lat info on station
-stations <- read.csv("stations.csv")
-
-# Read csv with parameters info
-parameters <- read.csv("parameters.csv")
 
 
 # TODO: Processing raw_data to create a daily dataset, by averaging each hourly measure, 
 # and containing also the weather variables and the names for each pollutant parameter.
 
+# Reading weather data
+weather <- data.table(read_excel("weather.xlsx"))
+
+# Subsetting raw_data to create a daily dataset
+daily_data <- data[,.(daily_avg=mean(value)), by=.(year,month,day,station,parameter)]
 
 
 # TODO: Generating a descriptive analysis with correlation matrices,
 # scatterplots, time series charts …
 
+# Read csv with long/lat info on station
+stations <- read.csv("stations.csv")
 
+# Read csv with parameters info
+parameters <- read.csv("parameters.csv")
 
 # TODO: Creating a linear regression model that explains NO2.
