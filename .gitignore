@@ -3,3 +3,5 @@
 .RData
 .Ruserdata
 R_group_assignment.Rproj
+parameters.csv
+stations.csv
