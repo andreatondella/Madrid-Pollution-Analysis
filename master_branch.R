@@ -79,7 +79,7 @@ for(x in paramlist) {
 # TODO: Processing raw_data to create a daily dataset, by averaging each hourly measure, 
 # and containing also the weather variables and the names for each pollutant parameter.
 
-
+#Modifica di andrea
 
 # TODO: Generating a descriptive analysis with correlation matrices,
 # scatterplots, time series charts …
