@@ -15,25 +15,24 @@ library(readxl)
 
 
 # Read all files into one data table. The verbose way.
-years <- c(11:12)
-months <- c(1:12)
-hours <- c(1:24)
-data <- data.table(year=integer(), month=integer(), day=integer(), hour=integer(), station=integer(), parameter=integer(), value=numeric())
+#years <- c(11:12)
+#months <- c(1:12)
+#hours <- c(1:24)
+#data <- data.table(year=integer(), month=integer(), day=integer(), hour=integer(), station=integer(), parameter=integer(), value=numeric())
 #data <- data.frame(day=integer(), hour=integer(), station=integer(), parameter=integer(), value=numeric())
-for(i in years) {
-  for(j in months) {
-    df <- read.csv(paste(paste("hourly_data", as.character(i), as.character(j), sep='_'), ".csv", sep=''))
-    yr <- rep(i + 2000, nrow(df))
-    mnth <- rep(j, nrow(df))
-    dftemp <- data.frame(year=yr, month=mnth)
-    df <- cbind(dftemp, df)
-    data <- rbind(data, df)
-  }
-}
+#for(i in years) {
+#  for(j in months) {
+#    df <- read.csv(paste(paste("hourly_data", as.character(i), as.character(j), sep='_'), ".csv", sep=''))
+#    yr <- rep(i + 2000, nrow(df))
+#    mnth <- rep(j, nrow(df))
+#    dftemp <- data.frame(year=yr, month=mnth)
+#    df <- cbind(dftemp, df)
+#    data <- rbind(data, df)
+#  }
+#}
 # Apparantly there are 6,471,098 rows and 5 columns
 
 # Read all files into one data table. Using sapply.
-library(data.table)
 data <- data.table(year=integer(), month=integer(), day=integer(), hour=integer(), station=integer(), parameter=integer(), value=numeric())
 years <- c(11:12)
 months <- c(1:12)
@@ -89,6 +88,7 @@ weather <- data.table(read_excel("weather.xlsx"))
 # Subsetting raw_data to create a daily dataset
 daily_data <- data[,.(daily_avg=mean(value)), by=.(year,month,day,station,parameter)]
 
+# Create a column with format yyyy-mm-aa for daily_data
 
 # TODO: Generating a descriptive analysis with correlation matrices,
 # scatterplots, time series charts …
