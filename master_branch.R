@@ -54,13 +54,22 @@ tail(data)
 data[is.na(value), 'value'] <- 0
 
 # Shorter way to read files. No need to build filenames here. We read all data files from the directory
-data <- data.table(year=integer(), month=integer(), day=integer(), hour=integer(), station=integer(), parameter=integer(), value=numeric())
+data <- data.table(yearmonth=character(), day=integer(), hour=integer(), station=integer(), parameter=integer(), value=numeric())
 datafiles <- list.files(pattern = 'ho.*csv')
 otherfiles <- setdiff(list.files(pattern = '.*csv'), datafiles)
 sapply(datafiles, function(x) {
   df <- read.csv(x)
+  ymframe <- data.frame(yearmonth=rep(as.character(paste(substr(x, regexpr('_[0-9][0-9]', x)+1, regexpr('[0-9]_.*\\.', x)), substr(x, regexpr('[0-9].*\\.', x)+3, regexpr('\\.csv',x)-1), sep='/')), nrow(df)))
+  df <- cbind(ymframe, df)
   data <<- rbind(data, df)
 })
+data[is.na(value), 'value'] <- 0
+data$day <- as.character(data$day)
+library(tidyr)
+data <- unite(data, dated, c('yearmonth', 'day'), sep='/')
+data$dated <- as.Date(data$dated)
+class(data$dated)
+head(data)
 
 # List of unique stations
 stationlist <- unique(data$station)
