@@ -53,6 +53,15 @@ head(data)
 tail(data)
 data[is.na(value), 'value'] <- 0
 
+# Shorter way to read files. No need to build filenames here. We read all data files from the directory
+data <- data.table(year=integer(), month=integer(), day=integer(), hour=integer(), station=integer(), parameter=integer(), value=numeric())
+datafiles <- list.files(pattern = 'ho.*csv')
+otherfiles <- setdiff(list.files(pattern = '.*csv'), datafiles)
+sapply(datafiles, function(x) {
+  df <- read.csv(x)
+  data <<- rbind(data, df)
+})
+
 # List of unique stations
 stationlist <- unique(data$station)
 # List of unique parameters
