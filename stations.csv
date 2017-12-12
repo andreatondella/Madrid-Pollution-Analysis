@@ -1,4 +1,4 @@
-station_ID,station_Name,station_loc,Lng,Lat,Alt,Type
+station_ID,station_Name,station_loc,Lon,Lat,Alt,Type
 28079004,Pza. de España,Plaza de España,-3.7122472222222225,40.423852777777775,635,Urbana de trafico
 28079008,Escuelas Aguirre,Entre C/ Alcalá y C/ O’ Donell,-3.6823194444444445,40.42156388888888,670,Urbana de trafico
 28079011,Avda. Ramón y Cajal,Avda. Ramón y Cajal  esq. C/ Príncipe de Vergara,-3.6773555555555553,40.451475,708,Urbana de trafico
