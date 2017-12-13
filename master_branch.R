@@ -70,7 +70,7 @@ data <- unite(data, dated, c('yearmonth', 'day'), sep='/')
 data$dated <- as.Date(data$dated)
 class(data$dated)
 head(data)
-
+tail(data)
 # List of unique stations
 stationlist <- unique(data$station)
 # List of unique parameters
@@ -96,15 +96,17 @@ for(x in paramlist) {
 }
 
 
-
 # TODO: Processing raw_data to create a daily dataset, by averaging each hourly measure, 
 # and containing also the weather variables and the names for each pollutant parameter.
+
+# Subsetting raw_data to create a daily dataset
+daily_data <- data[,.(daily_avg=mean(value)), by=.(dated,station,parameter)]
 
 # Reading weather data
 weather <- data.table(read_excel("weather.xlsx"))
 
-# Subsetting raw_data to create a daily dataset
-daily_data <- data[,.(daily_avg=mean(value)), by=.(year,month,day,station,parameter)]
+# Read csv with parameters info
+parameters <- read.csv("parameters.csv")
 
 # Create a column with format yyyy-mm-aa for daily_data
 
@@ -114,7 +116,6 @@ daily_data <- data[,.(daily_avg=mean(value)), by=.(year,month,day,station,parame
 # Read csv with long/lat info on station
 stations <- read.csv("stations.csv")
 
-# Read csv with parameters info
-parameters <- read.csv("parameters.csv")
+
 
 # TODO: Creating a linear regression model that explains NO2.
