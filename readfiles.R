@@ -97,36 +97,6 @@ for(x in paramlist) {
 
 
 
-<<<<<<< HEAD
-# # >>======================================>>
-# # This code merges weather info with main data. Takes too long. Better avoided.
-# mergeddata <- data.table(dated=as.character(),
-#                          year=integer(), month=integer(), day=character(),
-#                          hour=integer(), station=integer(), parameter=integer(), value=numeric(),
-#                          temp_avg=numeric(), temp_max=numeric(), temp_min=numeric(),
-#                          precipitation=numeric(), humidity=numeric(), wind_avg_speed=numeric())
-# mergeddata$dated <- as.Date(mergeddata$dated)
-# sapply(1:nrow(h_data), function(x) {
-#   weatherrow <- weather[weather$date == h_data[x, 'dated'], -c('date')]
-#   dft <- cbind(h_data[x,], weatherrow)
-#   mergeddata <<- rbind(mergeddata, dft)
-# })
-# head(mergeddata)
-# tail(mergeddata)
-# # <<======================================<<
-=======
-# Create a column with format yyyy-mm-aa for daily_data
-
-# TODO: Generating a descriptive analysis with correlation matrices,
-# scatterplots, time series charts …
-
-# Read csv with long/lat info on station
-stations <- read.csv("stations.csv")
-
-# Read csv with parameters info
-parameters <- read.csv("parameters.csv")
-
-# TODO: Creating a linear regression model that explains NO2.
 
 
 
@@ -137,20 +107,3 @@ parameters <- read.csv("parameters.csv")
 
 
 
-# >>======================================>>
-# This code merges weather info with main data. Takes too long. Better avoided.
-mergeddata <- data.table(dated=as.character(),
-                         year=integer(), month=integer(), day=character(),
-                         hour=integer(), station=integer(), parameter=integer(), value=numeric(),
-                         temp_avg=numeric(), temp_max=numeric(), temp_min=numeric(),
-                         precipitation=numeric(), humidity=numeric(), wind_avg_speed=numeric())
-mergeddata$dated <- as.Date(mergeddata$dated)
-sapply(1:nrow(h_data), function(x) {
-  weatherrow <- weather[weather$date == h_data[x, 'dated'], -c('date')]
-  dft <- cbind(h_data[x,], weatherrow)
-  mergeddata <<- rbind(mergeddata, dft)
-})
-head(mergeddata)
-tail(mergeddata)
-# <<======================================<<
->>>>>>> e06459b79e902af0ed4625e66d765a809bed73f4
