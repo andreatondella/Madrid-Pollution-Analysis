@@ -1,5 +1,4 @@
-# NewLine
-# MBDO2-2
+## MBDO2-2
 # R Group Assignment
 # ===================================================
 
@@ -17,6 +16,17 @@ weather <- data.table(read_excel("weather.xlsx"))
 weather$date <- as.Date(weather$date)
 
 # ===================================================
+
+#Reading parameters info
+parameters <- data.table(read.csv("parameters.csv"))
+
+# ===================================================
+
+#Reading stations info
+stations <- data.table(read.csv("stations.csv"))
+
+# ===================================================
+
 
 #Reading pollution data and creating the hourly dataset
 years <- c(11:12); months <- c(1:12)
@@ -48,18 +58,23 @@ h_data$year <- NULL
 h_data$month <- NULL
 h_data$day <- NULL
 
+
 # ===================================================
 
 # Subsetting raw_data to create a daily dataset and merge it with weather info and parameter name
+
 daily_data <- h_data[,.(daily_avg=mean(value)), by=.(ob_date,station,parameter)]
 
-daily_data_merged <- merge(daily_data, weather, by.x="ob_date", by.y="date", all=FALSE)
+daily_data <- merge(daily_data, weather, by.x="ob_date", by.y="date", all=FALSE)
 
-#trial
-
+daily_data <- merge(daily_data, parameters, by.x="parameter", by.y="param_ID", all = FALSE)
 
 
 # ===================================================
+
+# List of unique stations/parameters
+stationlist <- unique(h_data$station)
+paramlist <- unique(h_data$parameter)
 
 # Create list of data tables per station
 perstationdata <- list()
@@ -74,45 +89,3 @@ length(perparameterdata)
 for(x in paramlist) {
   perparameterdata[[length(perparameterdata) + 1]] <- h_data[parameter == x]
 }
-
-
-
-
-# Create a column with format yyyy-mm-aa for daily_data
-
-# TODO: Generating a descriptive analysis with correlation matrices,
-# scatterplots, time series charts …
-
-# Read csv with long/lat info on station
-stations <- read.csv("stations.csv")
-
-# Read csv with parameters info
-parameters <- read.csv("parameters.csv")
-
-# TODO: Creating a linear regression model that explains NO2.
-
-
-
-
-
-
-
-
-
-
-# # >>======================================>>
-# # This code merges weather info with main data. Takes too long. Better avoided.
-# mergeddata <- data.table(dated=as.character(),
-#                          year=integer(), month=integer(), day=character(),
-#                          hour=integer(), station=integer(), parameter=integer(), value=numeric(),
-#                          temp_avg=numeric(), temp_max=numeric(), temp_min=numeric(),
-#                          precipitation=numeric(), humidity=numeric(), wind_avg_speed=numeric())
-# mergeddata$dated <- as.Date(mergeddata$dated)
-# sapply(1:nrow(h_data), function(x) {
-#   weatherrow <- weather[weather$date == h_data[x, 'dated'], -c('date')]
-#   dft <- cbind(h_data[x,], weatherrow)
-#   mergeddata <<- rbind(mergeddata, dft)
-# })
-# head(mergeddata)
-# tail(mergeddata)
-# # <<======================================<<
