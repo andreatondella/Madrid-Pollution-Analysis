@@ -54,9 +54,9 @@ date_column <- data.frame(ob_date = as.Date(paste(raw_data$year, raw_data$month,
 h_data <- data.table(cbind(date_column, raw_data))
 date_column <- NULL
 head(h_data)
-h_data$year <- NULL
-h_data$month <- NULL
-h_data$day <- NULL
+# h_data$year <- NULL
+# h_data$month <- NULL
+# h_data$day <- NULL
 
 
 # ===================================================
