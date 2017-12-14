@@ -99,19 +99,19 @@ parameters <- read.csv("parameters.csv")
 
 
 
-# >>======================================>>
-# This code merges weather info with main data. Takes too long. Better avoided.
-mergeddata <- data.table(dated=as.character(),
-                         year=integer(), month=integer(), day=character(),
-                         hour=integer(), station=integer(), parameter=integer(), value=numeric(),
-                         temp_avg=numeric(), temp_max=numeric(), temp_min=numeric(),
-                         precipitation=numeric(), humidity=numeric(), wind_avg_speed=numeric())
-mergeddata$dated <- as.Date(mergeddata$dated)
-sapply(1:nrow(h_data), function(x) {
-  weatherrow <- weather[weather$date == h_data[x, 'dated'], -c('date')]
-  dft <- cbind(h_data[x,], weatherrow)
-  mergeddata <<- rbind(mergeddata, dft)
-})
-head(mergeddata)
-tail(mergeddata)
-# <<======================================<<
+# # >>======================================>>
+# # This code merges weather info with main data. Takes too long. Better avoided.
+# mergeddata <- data.table(dated=as.character(),
+#                          year=integer(), month=integer(), day=character(),
+#                          hour=integer(), station=integer(), parameter=integer(), value=numeric(),
+#                          temp_avg=numeric(), temp_max=numeric(), temp_min=numeric(),
+#                          precipitation=numeric(), humidity=numeric(), wind_avg_speed=numeric())
+# mergeddata$dated <- as.Date(mergeddata$dated)
+# sapply(1:nrow(h_data), function(x) {
+#   weatherrow <- weather[weather$date == h_data[x, 'dated'], -c('date')]
+#   dft <- cbind(h_data[x,], weatherrow)
+#   mergeddata <<- rbind(mergeddata, dft)
+# })
+# head(mergeddata)
+# tail(mergeddata)
+# # <<======================================<<
