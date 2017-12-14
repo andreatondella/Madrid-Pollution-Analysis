@@ -2,7 +2,7 @@
 # R Group Assignment
 # ===================================================
 
-# Reading the files and creating the initial datasets
+# Reading the files in the initial datasets
 
 # ===================================================
 
@@ -24,6 +24,12 @@ parameters <- data.table(read.csv("parameters.csv"))
 
 #Reading stations info
 stations <- data.table(read.csv("stations.csv"))
+
+# ===================================================
+
+#Reading holidays list and converting to date format
+holidays <- (data.table(read.csv("holidays.csv")))
+holidays$holiday <- as.Date(holidays$holiday)
 
 # ===================================================
 
