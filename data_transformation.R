@@ -2,22 +2,25 @@
 # R Group Assignment
 # ===================================================
 
-# Reading the files and creating the initial datasets
+# Transforming the datasets
 
 # ===================================================
 
 #Loading libraries
 source("lib_loading.R")
-
+start <- Sys.time()
 # ===================================================
 
-# Creating date column
 
-raw_data$year <- as.character(raw_data$year); raw_data$month <- as.character(raw_data$month); raw_data$day <- as.character(raw_data$day)
-date_column <- data.frame(ob_date = as.Date(paste(raw_data$year, raw_data$month, raw_data$day, sep='-')))
-h_data <- data.table(cbind(date_column, raw_data))
-date_column <- NULL
+# raw_data$year <- as.character(raw_data$year); raw_data$month <- as.character(raw_data$month); raw_data$day <- as.character(raw_data$day)
+# date_column <- data.frame(ob_date = as.Date(paste(raw_data$year, raw_data$month, raw_data$day, sep='-')))
+# h_data <- data.table(cbind(date_column, raw_data))
+# date_column <- NULL
+# head(h_data)
+
+h_data <- raw_data[ ,ob_date := as.Date(paste0(year,"-",month,"-",day))]
 head(h_data)
+
 # h_data$year <- NULL
 # h_data$month <- NULL
 # h_data$day <- NULL
@@ -61,4 +64,7 @@ length(perparameterdata)
 for(x in paramlist) {
   perparameterdata[[length(perparameterdata) + 1]] <- h_data[parameter == x]
 }
+
+stop <- Sys.time()
+print(stop-start)
 

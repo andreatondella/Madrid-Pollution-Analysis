@@ -8,7 +8,7 @@
 
 #Loading libraries
 source("lib_loading.R")
-
+start <- Sys.time()
 # ===================================================
 
 #Reading weather data and converting date column to date format
@@ -35,7 +35,7 @@ holidays$holiday <- as.Date(holidays$holiday)
 
 
 #Reading pollution data and creating the hourly dataset
-years <- c(11:12); months <- c(1:12)
+years <- c(11:16); months <- c(1:12)
 filenameprefix <- "hourly_data"
 raw_data <- data.table(year=integer(), month=integer(), day=character(), hour=integer(),station=integer(), parameter=integer(), value=numeric())
 
@@ -51,47 +51,52 @@ raw_data[is.na(value), 'value'] <- 0
 head(raw_data)
 tail(raw_data)
 
+# # ===================================================
+# 
+# # Creating date column
+# 
+# raw_data$year <- as.character(raw_data$year); raw_data$month <- as.character(raw_data$month); raw_data$day <- as.character(raw_data$day)
+# date_column <- data.frame(ob_date = as.Date(paste(raw_data$year, raw_data$month, raw_data$day, sep='-')))
+# h_data <- data.table(cbind(date_column, raw_data))
+# date_column <- NULL
+# head(h_data)
+# # h_data$year <- NULL
+# # h_data$month <- NULL
+# # h_data$day <- NULL
+# 
+# 
+# # ===================================================
+# 
+# # Subsetting raw_data to create a daily dataset and merge it with weather info and parameter name
+# 
+# daily_data <- h_data[,.(daily_avg=mean(value)), by=.(ob_date,station,parameter)]
+# 
+# daily_data <- merge(daily_data, weather, by.x="ob_date", by.y="date", all=FALSE)
+# 
+# daily_data <- merge(daily_data, parameters, by.x="parameter", by.y="param_ID", all = FALSE)
+# 
+# 
+# # ===================================================
+# 
+# # List of unique stations/parameters
+# stationlist <- unique(h_data$station)
+# paramlist <- unique(h_data$parameter)
+# 
+# # Create list of data tables per station
+# perstationdata <- list()
+# length(stationlist)
+# for(x in stationlist) {
+#   perstationdata[[length(perstationdata) + 1]]  <- h_data[station == x,]
+# }
+# 
+# # Create list of data tables per parameter
+# perparameterdata <- list()
+# length(perparameterdata)
+# for(x in paramlist) {
+#   perparameterdata[[length(perparameterdata) + 1]] <- h_data[parameter == x]
+# }
+
 # ===================================================
 
-# Creating date column
-
-raw_data$year <- as.character(raw_data$year); raw_data$month <- as.character(raw_data$month); raw_data$day <- as.character(raw_data$day)
-date_column <- data.frame(ob_date = as.Date(paste(raw_data$year, raw_data$month, raw_data$day, sep='-')))
-h_data <- data.table(cbind(date_column, raw_data))
-date_column <- NULL
-head(h_data)
-# h_data$year <- NULL
-# h_data$month <- NULL
-# h_data$day <- NULL
-
-
-# ===================================================
-
-# Subsetting raw_data to create a daily dataset and merge it with weather info and parameter name
-
-daily_data <- h_data[,.(daily_avg=mean(value)), by=.(ob_date,station,parameter)]
-
-daily_data <- merge(daily_data, weather, by.x="ob_date", by.y="date", all=FALSE)
-
-daily_data <- merge(daily_data, parameters, by.x="parameter", by.y="param_ID", all = FALSE)
-
-
-# ===================================================
-
-# List of unique stations/parameters
-stationlist <- unique(h_data$station)
-paramlist <- unique(h_data$parameter)
-
-# Create list of data tables per station
-perstationdata <- list()
-length(stationlist)
-for(x in stationlist) {
-  perstationdata[[length(perstationdata) + 1]]  <- h_data[station == x,]
-}
-
-# Create list of data tables per parameter
-perparameterdata <- list()
-length(perparameterdata)
-for(x in paramlist) {
-  perparameterdata[[length(perparameterdata) + 1]] <- h_data[parameter == x]
-}
+stop <- Sys.time()
+print(stop-start)
