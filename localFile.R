@@ -21,11 +21,11 @@ data <- data.table(year=integer(), month=integer(), day=character(), hour=intege
                    station=integer(), parameter=integer(), value=numeric())
 
 sapply(years, function(x) { sapply(months, function(y) {
-  filename <- paste(paste(filenameprefix, as.character(x), as.character(y), sep="_"), '.csv', sep='')
-  df <- read.csv(filename)
-  yr <- rep(x+2000, nrow(df)); mnth <- rep(y, nrow(df)); dftemp <- data.frame(year=yr, month=mnth)
-  df <- cbind(dftemp, df); data <<- rbind(data, df)
-}) })
+    filename <- paste(paste(filenameprefix, as.character(x), as.character(y), sep="_"), '.csv', sep='')
+    df <- read.csv(filename)
+    yr <- rep(x+2000, nrow(df)); mnth <- rep(y, nrow(df)); dftemp <- data.frame(year=yr, month=mnth)
+    df <- cbind(dftemp, df); data <<- rbind(data, df)
+  }) })
 data[is.na(value), 'value'] <- 0
 # ===================================================
 data$year <- as.character(data$year); data$month <- as.character(data$month); data$day <- as.character(data$day)
