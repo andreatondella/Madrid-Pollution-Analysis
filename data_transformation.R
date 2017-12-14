@@ -34,18 +34,13 @@ daily_data <- merge(daily_data, parameters, by.x="parameter", by.y="param_ID", a
 # Adding some info about day of the week and holidays
 
 daily_data[,week_day:=weekdays(ob_date)]
-#daily_data[,workday := ifelse(week_day == ("Monday"|"Tuesday" | "Wednesday" | "Thursday" | "Friday"), 1, 0)]
+
+# Creating dummy variables for workdays, restdays & holidays
 daily_data[ ,workday := daily_data$week_day %in% c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday") ]
 daily_data[ ,restday := daily_data$week_day %in% c("Saturday", "Sunday") ]
-
-dummy_holidays <- function(x){
- if(x$ob_date %in% holidays$holiday){
-    x$restda[x] <- TRUE
- }
-}
+daily_data[, holiday :=  daily_data$ob_date %in% holidays$holiday]
 
 head(daily_data)
-#samp[, lf5 := ifelse(loadfactor5 < 0, 0, loadfactor5)]
 
 # ===================================================
 # List of unique stations/parameters
