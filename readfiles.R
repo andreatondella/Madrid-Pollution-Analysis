@@ -17,6 +17,17 @@ weather$date <- as.Date(weather$date)
 
 # ===================================================
 
+#Reading parameters info
+parameters <- data.table(read.csv("parameters.csv"))
+
+# ===================================================
+
+#Reading stations info
+stations <- data.table(read.csv("stations.csv"))
+
+# ===================================================
+
+
 #Reading pollution data and creating the hourly dataset
 years <- c(11:12); months <- c(1:12)
 filenameprefix <- "hourly_data"
@@ -38,38 +49,23 @@ tail(raw_data)
 
 # Creating date column
 
-# The data table way
-# Still needs some improvements
-intermediate <<- raw_data[,date:=paste0(year,"-",month,"-",day)]
-
-h_data <<- intermediate[,c("year","month","day"):=NULL]
-
+raw_data$year <- as.character(raw_data$year); raw_data$month <- as.character(raw_data$month); raw_data$day <- as.character(raw_data$day)
+date_column <- data.frame(ob_date = as.Date(paste(raw_data$year, raw_data$month, raw_data$day, sep='-')))
+h_data <- data.table(cbind(date_column, raw_data))
+date_column <- NULL
 head(h_data)
-tail(h_data)
-
-#ALTERNATIVE WAY:
-# h_data$year <- as.character(h_data$year); h_data$month <- as.character(h_data$month); h_data$day <- as.character(h_data$day)
-# dateddf <- h_data.frame(dated = as.Date(paste(h_data$year, h_data$month, h_data$day, sep='-')))
-# h_data <- cbind(dateddf, h_data)
-# dateddf <- NULL
-# head(h_data)
-# h_data$year <- NULL
-# h_data$month <- NULL
-# h_data$day <- NULL
+h_data$year <- NULL
+h_data$month <- NULL
+h_data$day <- NULL
 
 # ===================================================
 
 # Subsetting raw_data to create a daily dataset and merge it with weather info and parameter name
-<<<<<<< HEAD
+
 
 daily_data <- h_data[,.(daily_avg=mean(value)), by=.(ob_date,station,parameter)]
 
 daily_data <- merge(daily_data, weather, by.x="ob_date", by.y="date", all=FALSE)
-=======
-daily_data <- h_data[,.(daily_avg=mean(value)), by=.(date,station,parameter)]
-
-daily_data <- merge(daily_data, weather, by.daily_data=)
->>>>>>> e06459b79e902af0ed4625e66d765a809bed73f4
 
 daily_data <- merge(daily_data, parameters, by.x="parameter", by.y="param_ID", all = FALSE)
 
@@ -93,17 +89,3 @@ length(perparameterdata)
 for(x in paramlist) {
   perparameterdata[[length(perparameterdata) + 1]] <- h_data[parameter == x]
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
