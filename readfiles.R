@@ -60,16 +60,10 @@ tail(h_data)
 # ===================================================
 
 # Subsetting raw_data to create a daily dataset and merge it with weather info and parameter name
-<<<<<<< HEAD
 
 daily_data <- h_data[,.(daily_avg=mean(value)), by=.(ob_date,station,parameter)]
 
 daily_data <- merge(daily_data, weather, by.x="ob_date", by.y="date", all=FALSE)
-=======
-daily_data <- h_data[,.(daily_avg=mean(value)), by=.(date,station,parameter)]
-
-daily_data <- merge(daily_data, weather, by.daily_data=)
->>>>>>> e06459b79e902af0ed4625e66d765a809bed73f4
 
 daily_data <- merge(daily_data, parameters, by.x="parameter", by.y="param_ID", all = FALSE)
 
