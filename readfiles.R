@@ -17,6 +17,17 @@ weather$date <- as.Date(weather$date)
 
 # ===================================================
 
+#Reading parameters info
+parameters <- data.table(read.csv("parameters.csv"))
+
+# ===================================================
+
+#Reading stations info
+stations <- data.table(read.csv("stations.csv"))
+
+# ===================================================
+
+
 #Reading pollution data and creating the hourly dataset
 years <- c(11:12); months <- c(1:12)
 filenameprefix <- "hourly_data"
@@ -87,17 +98,3 @@ length(perparameterdata)
 for(x in paramlist) {
   perparameterdata[[length(perparameterdata) + 1]] <- h_data[parameter == x]
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
