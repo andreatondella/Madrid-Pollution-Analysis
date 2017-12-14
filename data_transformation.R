@@ -34,8 +34,18 @@ daily_data <- merge(daily_data, parameters, by.x="parameter", by.y="param_ID", a
 # Adding some info about day of the week and holidays
 
 daily_data[,week_day:=weekdays(ob_date)]
+#daily_data[,workday := ifelse(week_day == ("Monday"|"Tuesday" | "Wednesday" | "Thursday" | "Friday"), 1, 0)]
+daily_data[ ,workday := daily_data$week_day %in% c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday") ]
+daily_data[ ,restday := daily_data$week_day %in% c("Saturday", "Sunday") ]
 
+dummy_holidays <- function(x){
+ if(x$ob_date %in% holidays$holiday){
+    x$restda[x] <- TRUE
+ }
+}
 
+head(daily_data)
+#samp[, lf5 := ifelse(loadfactor5 < 0, 0, loadfactor5)]
 
 # ===================================================
 # List of unique stations/parameters
@@ -48,7 +58,8 @@ length(stationlist)
 for(x in stationlist) {
   perstationdata[[length(perstationdata) + 1]]  <- h_data[station == x,]
 }
-
+daily_data[, holiday :=  daily_data$ob_date %in% holidays$holiday]
+daily_data$ob_date %in% holidays$holiday
 # Create list of data tables per parameter
 perparameterdata <- list()
 length(perparameterdata)
