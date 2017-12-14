@@ -38,7 +38,7 @@ daily_data[,week_day:=weekdays(ob_date)]
 # Creating dummy variables for workdays, restdays & holidays
 daily_data[ ,workday := daily_data$week_day %in% c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday") ]
 daily_data[ ,restday := daily_data$week_day %in% c("Saturday", "Sunday") ]
-daily_data[, holiday :=  daily_data$ob_date %in% holidays$holiday]
+daily_data[ ,holiday := daily_data$ob_date %in% holidays$holiday]
 
 head(daily_data)
 
