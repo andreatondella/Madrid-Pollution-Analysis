@@ -28,11 +28,11 @@ head(h_data)
 daily_data <- h_data[,.(daily_avg=mean(value)), by=.(ob_date,station,parameter)]
 daily_data <- merge(daily_data, weather, by.x="ob_date", by.y="date", all=FALSE)
 daily_data <- merge(daily_data, parameters, by.x="parameter", by.y="param_ID", all = FALSE)
+daily_data <- merge(daily_data, stations, by.x="station", by.y="station_ID", all=FALSE)
 
 # ===================================================
 
 # Adding some info about day of the week and holidays
-
 daily_data[,week_day:=weekdays(ob_date)]
 
 # Creating dummy variables for workdays, restdays & holidays
