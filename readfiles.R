@@ -66,15 +66,19 @@ h_data$day <- NULL
 # ===================================================
 
 # Subsetting raw_data to create a daily dataset and merge it with weather info and parameter name
+
 daily_data <- h_data[,.(daily_avg=mean(value)), by=.(ob_date,station,parameter)]
 
-daily_data_merged <- merge(daily_data, weather, by.x="ob_date", by.y="date", all=FALSE)
+daily_data <- merge(daily_data, weather, by.x="ob_date", by.y="date", all=FALSE)
 
-#trial
-
+daily_data <- merge(daily_data, parameters, by.x="parameter", by.y="param_ID", all = FALSE)
 
 
 # ===================================================
+
+# List of unique stations/parameters
+stationlist <- unique(h_data$station)
+paramlist <- unique(h_data$parameter)
 
 # Create list of data tables per station
 perstationdata <- list()
@@ -89,28 +93,6 @@ length(perparameterdata)
 for(x in paramlist) {
   perparameterdata[[length(perparameterdata) + 1]] <- h_data[parameter == x]
 }
-
-
-
-
-# Create a column with format yyyy-mm-aa for daily_data
-
-# TODO: Generating a descriptive analysis with correlation matrices,
-# scatterplots, time series charts …
-
-# Read csv with long/lat info on station
-stations <- read.csv("stations.csv")
-
-# Read csv with parameters info
-parameters <- read.csv("parameters.csv")
-
-# TODO: Creating a linear regression model that explains NO2.
-
-
-
-
-
-
 
 
 
