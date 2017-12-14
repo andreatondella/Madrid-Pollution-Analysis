@@ -54,6 +54,8 @@ daily_data <- h_data[,.(daily_avg=mean(value)), by=.(ob_date,station,parameter)]
 
 daily_data_merged <- merge(daily_data, weather, by.x="ob_date", by.y="date", all=FALSE)
 
+#trial
+
 
 
 # ===================================================
