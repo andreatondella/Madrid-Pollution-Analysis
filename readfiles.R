@@ -17,22 +17,6 @@ weather$date <- as.Date(weather$date)
 
 # ===================================================
 
-#Reading pollutant data
-parameters <- data.table(read.csv("parameters.csv"))
-
-# ===================================================
-
-#Reading station info
-stations <- data.table(read.csv("stations.csv"))
-
-# ===================================================
-
-#Reading weather data and converting date column to date format
-weather <- data.table(read_excel("weather.xlsx"))
-weather$date <- as.Date(weather$date)
-
-# ===================================================
-
 #Reading pollution data and creating the hourly dataset
 years <- c(11:12); months <- c(1:12)
 filenameprefix <- "hourly_data"
@@ -54,22 +38,38 @@ tail(raw_data)
 
 # Creating date column
 
-raw_data$year <- as.character(raw_data$year); raw_data$month <- as.character(raw_data$month); raw_data$day <- as.character(raw_data$day)
-date_column <- data.frame(ob_date = as.Date(paste(raw_data$year, raw_data$month, raw_data$day, sep='-')))
-h_data <- data.table(cbind(date_column, raw_data))
-date_column <- NULL
+# The data table way
+# Still needs some improvements
+intermediate <<- raw_data[,date:=paste0(year,"-",month,"-",day)]
+
+h_data <<- intermediate[,c("year","month","day"):=NULL]
+
 head(h_data)
-h_data$year <- NULL
-h_data$month <- NULL
-h_data$day <- NULL
+tail(h_data)
+
+#ALTERNATIVE WAY:
+# h_data$year <- as.character(h_data$year); h_data$month <- as.character(h_data$month); h_data$day <- as.character(h_data$day)
+# dateddf <- h_data.frame(dated = as.Date(paste(h_data$year, h_data$month, h_data$day, sep='-')))
+# h_data <- cbind(dateddf, h_data)
+# dateddf <- NULL
+# head(h_data)
+# h_data$year <- NULL
+# h_data$month <- NULL
+# h_data$day <- NULL
 
 # ===================================================
 
 # Subsetting raw_data to create a daily dataset and merge it with weather info and parameter name
+<<<<<<< HEAD
 
 daily_data <- h_data[,.(daily_avg=mean(value)), by=.(ob_date,station,parameter)]
 
 daily_data <- merge(daily_data, weather, by.x="ob_date", by.y="date", all=FALSE)
+=======
+daily_data <- h_data[,.(daily_avg=mean(value)), by=.(date,station,parameter)]
+
+daily_data <- merge(daily_data, weather, by.daily_data=)
+>>>>>>> e06459b79e902af0ed4625e66d765a809bed73f4
 
 daily_data <- merge(daily_data, parameters, by.x="parameter", by.y="param_ID", all = FALSE)
 
@@ -97,6 +97,7 @@ for(x in paramlist) {
 
 
 
+<<<<<<< HEAD
 # # >>======================================>>
 # # This code merges weather info with main data. Takes too long. Better avoided.
 # mergeddata <- data.table(dated=as.character(),
@@ -113,3 +114,43 @@ for(x in paramlist) {
 # head(mergeddata)
 # tail(mergeddata)
 # # <<======================================<<
+=======
+# Create a column with format yyyy-mm-aa for daily_data
+
+# TODO: Generating a descriptive analysis with correlation matrices,
+# scatterplots, time series charts …
+
+# Read csv with long/lat info on station
+stations <- read.csv("stations.csv")
+
+# Read csv with parameters info
+parameters <- read.csv("parameters.csv")
+
+# TODO: Creating a linear regression model that explains NO2.
+
+
+
+
+
+
+
+
+
+
+# >>======================================>>
+# This code merges weather info with main data. Takes too long. Better avoided.
+mergeddata <- data.table(dated=as.character(),
+                         year=integer(), month=integer(), day=character(),
+                         hour=integer(), station=integer(), parameter=integer(), value=numeric(),
+                         temp_avg=numeric(), temp_max=numeric(), temp_min=numeric(),
+                         precipitation=numeric(), humidity=numeric(), wind_avg_speed=numeric())
+mergeddata$dated <- as.Date(mergeddata$dated)
+sapply(1:nrow(h_data), function(x) {
+  weatherrow <- weather[weather$date == h_data[x, 'dated'], -c('date')]
+  dft <- cbind(h_data[x,], weatherrow)
+  mergeddata <<- rbind(mergeddata, dft)
+})
+head(mergeddata)
+tail(mergeddata)
+# <<======================================<<
+>>>>>>> e06459b79e902af0ed4625e66d765a809bed73f4

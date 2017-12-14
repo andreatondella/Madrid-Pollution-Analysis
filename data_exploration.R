@@ -22,7 +22,3 @@ for(x in stationlist) {
   print(x)
   print(h_data[station == x, unique(parameter)])
 }
-
-#hello
-
-#hi
