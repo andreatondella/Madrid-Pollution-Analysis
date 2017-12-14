@@ -17,6 +17,22 @@ weather$date <- as.Date(weather$date)
 
 # ===================================================
 
+#Reading pollutant data
+parameters <- data.table(read.csv("parameters.csv"))
+
+# ===================================================
+
+#Reading station info
+stations <- data.table(read.csv("stations.csv"))
+
+# ===================================================
+
+#Reading weather data and converting date column to date format
+weather <- data.table(read_excel("weather.xlsx"))
+weather$date <- as.Date(weather$date)
+
+# ===================================================
+
 #Reading pollution data and creating the hourly dataset
 years <- c(11:12); months <- c(1:12)
 filenameprefix <- "hourly_data"
