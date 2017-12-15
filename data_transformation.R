@@ -46,6 +46,11 @@ daily_data[ ,workday := !(daily_data$restday | daily_data$holiday)]
 head(daily_data)
 
 # ===================================================
+
+# Expand the parameter column in many columns one for each parameter. The number of row will decrease, the number of columns will increase
+try <- data.table(tidyr::spread(daily_data, param_Form, daily_avg))
+
+# ===================================================
 # List of unique stations/parameters
 stationlist <- unique(h_data$station)
 paramlist <- unique(h_data$parameter)
