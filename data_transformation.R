@@ -27,7 +27,7 @@ head(h_data)
 
 # ===================================================
 
-# Subsetting raw_data to create a daily dataset and merge it with weather info and parameter name
+# Subsetting raw_data to create a daily dataset and merge it with weather, parameters & station info
 daily_data <- h_data[,.(daily_avg=mean(value)), by=.(ob_date,station,parameter)]
 daily_data <- merge(daily_data, weather, by.x="ob_date", by.y="date", all=FALSE)
 daily_data <- merge(daily_data, parameters, by.x="parameter", by.y="param_ID", all = FALSE)
@@ -40,15 +40,19 @@ daily_data[,week_day:=weekdays(ob_date)]
 
 # Creating dummy variables for workdays, restdays & holidays
 # daily_data[ ,workday := daily_data$week_day %in% c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")]
-daily_data[ ,restday := daily_data$week_day %in% c("Saturday", "Sunday") ]
-daily_data[ ,holiday := daily_data$ob_date %in% holidays$holiday]
-daily_data[ ,workday := !(daily_data$restday | daily_data$holiday)]
+daily_data[ ,restday := ((daily_data$week_day %in% c("Saturday", "Sunday")) | (daily_data$ob_date %in% holidays$holiday)) ]
+daily_data[ ,workday := !(daily_data$restday)]
 head(daily_data)
 
 # ===================================================
 
-# Expand the parameter column in many columns one for each parameter. The number of row will decrease, the number of columns will increase
-try <- data.table(tidyr::spread(daily_data, param_Form, daily_avg))
+# # Expand the parameter column in many columns one for each parameter
+# daily_data_pp <- daily_data[ ,c("param_Name", "param_unit", "parameter") := NULL]
+# daily_data_pp <- data.table(tidyr::spread(daily_data_pp, param_Form, daily_avg))
+# 
+# # Expand the stations column in many columns one for each station
+# daily_data_ps <- daily_data[ ,c("station", "station_loc", "Lat", "Lng") := NULL]
+# daily_data_ps <- data.table(tidyr::spread(daily_data_pp, station_Name, daily_avg))
 
 # ===================================================
 # List of unique stations/parameters
