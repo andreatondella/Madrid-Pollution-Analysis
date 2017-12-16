@@ -44,8 +44,26 @@ marrangeGrob(p_NO2, nrow=2, ncol=2)
 NO2_mean <- mean(NO2)
 NO2_sd <- sd(NO2)
 
-NO2_thres <- c(50,100,150,200)
-
+# 50, 100 and 150 are reccomended threshold values for NO2
+# https://www3.epa.gov/airnow/no2.pdf
 plot(NO2, pch=19, xlab=''); grid()
-points(NO2 <= NO2_thres[1],col)
+abline(50,0,col="chartreuse4")  
+abline(100,0,col="gold") 
+abline(150,0,col="darkorange2")
 points(rep(0,length(NO2)),col='white')
+
+#Trying a logarithmic transformation, cannot achieve a normal distribution
+# ln_NO2<-log(NO2)
+
+# p0_ln<-qplot(x=1:length(NO2),y=ln_NO2, geom='point')
+# p1_ln<-qplot(ln_NO2, geom='histogram')
+# p2_ln<-qplot(ln_NO2, geom='density')
+# p3_ln<-qplot(ln_NO2, x= 1, geom = "boxplot")
+# p_ln<-list(p0_ln,p1_ln,p2_ln,p3_ln)
+# marrangeGrob(p_ln, nrow=2, ncol=2)
+
+corrplot(cor(daily_data_pp[complete.cases(daily_data_pp), c("BEN","CO","EBE","NMHC","NO","NO2","O3","PM10","PM2.5","SO2","TCH","TOL")]), method = 'circle', tl.col = 'black')
+
+p<-GGally::ggpairs(daily_data_pp[complete.cases(daily_data_pp), c("BEN","CO","EBE","NMHC","NO","NO2","O3","PM10","PM2.5","SO2","TCH","TOL")],axisLabels = 'none',size=1,lwd=0.5,alpha=.5)
+
+ggplotly(p, width = 800, height = 500)
