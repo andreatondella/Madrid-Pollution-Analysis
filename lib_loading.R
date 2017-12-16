@@ -6,7 +6,6 @@ library(tidyr) #package to reshape data
 library(ggplot2)
 library(gridExtra)
 library(corrplot)
-library(GGally)
 library(plotly)
 #library(openair)
 #library(dygraphs)
