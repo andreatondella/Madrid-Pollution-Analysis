@@ -46,13 +46,16 @@ head(daily_data)
 
 # ===================================================
 
-# # Expand the parameter column in many columns one for each parameter
-# daily_data_pp <- daily_data[ ,c("param_Name", "param_unit", "parameter") := NULL]
-# daily_data_pp <- data.table(tidyr::spread(daily_data_pp, param_Form, daily_avg))
-# 
-# # Expand the stations column in many columns one for each station
-# daily_data_ps <- daily_data[ ,c("station", "station_loc", "Lat", "Lng") := NULL]
-# daily_data_ps <- data.table(tidyr::spread(daily_data_pp, station_Name, daily_avg))
+# Expand the parameter column in many columns one for each parameter
+
+daily_data_pp <- daily_data
+daily_data_pp <- daily_data_pp[ ,c("param_Name", "param_unit", "parameter") := NULL]
+daily_data_pp <- data.table(tidyr::spread(daily_data_pp, param_Form, daily_avg))
+
+# Expand the stations column in many columns one for each station
+daily_data_ps <- daily_data
+daily_data_ps <- daily_data_ps[ ,c("station", "station_loc", "Lat", "Lng") := NULL]
+daily_data_ps <- data.table(tidyr::spread(daily_data_ps, station_Name, daily_avg))
 
 # ===================================================
 # List of unique stations/parameters
