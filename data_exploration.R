@@ -62,8 +62,47 @@ points(rep(0,length(NO2)),col='white')
 # p_ln<-list(p0_ln,p1_ln,p2_ln,p3_ln)
 # marrangeGrob(p_ln, nrow=2, ncol=2)
 
-corrplot(cor(daily_data_pp[complete.cases(daily_data_pp), c("BEN","CO","EBE","NMHC","NO","NO2","O3","PM10","PM2.5","SO2","TCH","TOL")]), method = 'circle', tl.col = 'black')
+# ===================================================
 
-p<-GGally::ggpairs(daily_data_pp[complete.cases(daily_data_pp), c("BEN","CO","EBE","NMHC","NO","NO2","O3","PM10","PM2.5","SO2","TCH","TOL")],axisLabels = 'none',size=1,lwd=0.5,alpha=.5)
+corrplot(cor(daily_data_pp[complete.cases(daily_data_pp), c("BEN","CO","EBE","NMHC","NO","NO2","O3","PM10","PM2.5","SO2","TCH","TOL")]), method = 'number', tl.col = 'black')
 
-ggplotly(p, width = 800, height = 500)
+# ===================================================
+
+# Let's look at O3 values to search for an explanation for the negative correlation
+O3 <- daily_data_pp$O3[!is.na(daily_data_pp$O3)]
+quantile(O3, seq(0,1,0.1))
+
+p0_O3<-qplot(x=1:length(O3),y=O3, geom='point')
+p1_O3<-qplot(O3, geom='histogram')
+p2_O3<-qplot(O3, geom='density')
+p3_O3<-qplot(O3, x= 1, geom = "boxplot")
+p_O3<-list(p0_O3,p1_O3, p2_O3, p3_O3)
+marrangeGrob(p_O3, nrow=2, ncol=2)
+
+O3_mean <- mean(O3)
+O3_sd <- sd(O3)
+
+# 50, 100 and 150 are reccomended threshold values for NO2
+# https://www3.epa.gov/airnow/no2.pdf
+plot(O3, pch=19, xlab=''); grid()
+abline(50,0,col="chartreuse4")  
+abline(100,0,col="gold") 
+abline(150,0,col="darkorange2")
+points(rep(0,length(O3)),col='white')
+
+# ===================================================
+
+# Let's analyse NO2 and O3 together
+
+NO2_O3<-daily_data_pp[ ,.(x=NO2, y=O3)]
+NO2_O3 <- NO2_O3[complete.cases(NO2_O3), ]
+head(NO2_O3)
+
+NO2_O3_p1<-qplot(NO2_O3$x,geom='density')
+NO2_O3_p2<-qplot(NO2_O3$y,geom='density')
+NO2_O3_p4<-ggplot(NO2_O3,aes(x=x,y=y))+geom_point()
+NO2_O3_p<-list(NO2_O3_p1,NO2_O3_p2)
+marrangeGrob(NO2_O3_p, nrow=2, ncol=1)
+
+print(NO2_O3_p4+ggtitle('NO2 vs O3'))
+# ===================================================
