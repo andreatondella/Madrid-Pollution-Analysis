@@ -64,7 +64,8 @@ points(rep(0,length(NO2)),col='white')
 
 # ===================================================
 
-corrplot(cor(daily_data_pp[complete.cases(daily_data_pp), c("BEN","CO","EBE","NMHC","NO","NO2","O3","PM10","PM2.5","SO2","TCH","TOL")]), method = 'number', tl.col = 'black')
+corrplot(cor(daily_data_pp[complete.cases(daily_data_pp), c("BEN","CO","EBE","NMHC","NO","NO2","O3","PM10","PM2.5","SO2","TCH","TOL")]), method = 'number', tl.col = 'black', order='hclust')
+corrplot(cor(daily_data_pp[complete.cases(daily_data_pp), c("temp_avg", "humidity", "wind_avg_speed", "precipitation", "NO2", "O3")]), method = 'number', tl.col = 'black', order='hclust')
 
 # ===================================================
 
