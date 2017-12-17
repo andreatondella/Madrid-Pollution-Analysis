@@ -62,5 +62,23 @@ p <-p + theme(legend.position = "bottom")+
   theme(legend.text=element_text(size=6))+
   removeGrid()#ggExtra
 
+  print(ggplot(df,aes(day,hour,fill=as.numeric(value))) + geom_tile(color= "white",size=0.1) 
+  + scale_fill_viridis_c(name="Hrly Temps C",option ="C")
+  + facet_grid(year~month)
+  + scale_y_continuous(trans = "reverse", breaks = unique(df$hour))
+  + scale_x_continuous(breaks =c(1,10,20,31))
+  + theme_minimal(base_size = 8)
+  + labs(title= paste("Hourly Temps - Station","statno"), x="Day", y="Hour Commencing")
+  + theme(legend.position = "bottom")+
+  theme(plot.title=element_text(size = 14))+
+  theme(axis.text.y=element_text(size=6)) +
+  theme(strip.background = element_rect(colour="white"))+
+  theme(plot.title=element_text(hjust=0))+
+  theme(axis.ticks=element_blank())+
+  theme(axis.text=element_text(size=7))+
+  theme(legend.title=element_text(size=8))+
+  theme(legend.text=element_text(size=6))+
+  removeGrid())#ggExtra
+
 # you will want to expand your plot screen before this bit!
 p #awesomeness

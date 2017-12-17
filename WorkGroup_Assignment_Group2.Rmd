@@ -1,5 +1,6 @@
 ---
-title: "WorkGroup_Assignment_Group2"
+title: "Air quality in Madrid"
+subtitle: "An analysis of pollutants trends in the city of Madrid from 2011 to 2016"
 author: "Group 2"
 date: "12/17/2017"
 output: html_document
@@ -8,23 +9,117 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+```{r lib loading, include=FALSE}
 
-## R Markdown
+library(data.table) #package to deal with data tables
+library(readxl) #package to read excel files
+library(tidyr) #package to reshape data
+library(ggplot2)
+library(gridExtra)
+library(corrplot)
+library(plotly)
+```
+## Introduction
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+INSERT INTRODUCTION
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+## Importing the initial datasets
+The analysis is based in two main datasets, one containing information about tha pollutant parameters, measured at an hourly level in 24 different stations and the other conntaining information about the weather at a daily level
 
-```{r cars}
-summary(cars)
+#### Importing the pollutants observations
+The observations on pollutants are stored in 72 `.csv` files, each containing the hourly levels of all the parameter for 1 single month. The following function automate the process of reading all the `.csv` files and stores the observations in the initial `raw_data` dataset.
+
+```{r raw_data, results=FALSE}
+years <- c(11:12); months <- c(1:12)
+filenameprefix <- "hourly_data"
+raw_data <- data.table(year=integer(), month=integer(), day=character(), hour=integer(),station=integer(), parameter=integer(), value=numeric())
+
+sapply(years, function(x) { sapply(months, function(y) {
+  filename <- paste(paste(filenameprefix, as.character(x), as.character(y), sep="_"), '.csv', sep='')
+  df <- read.csv(filename)
+  yr <- rep(x+2000, nrow(df)); mnth <- rep(y, nrow(df)); dftemp <- data.frame(year=yr, month=mnth)
+  df <- cbind(dftemp, df); raw_data <<- rbind(raw_data, df)
+}) })
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+Taking an initial look at raw_data:
+```{r raw_data initial look}
+head(raw_data)
+str(raw_data)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Converting NA values to zeros
+```{r raw_data NA <- 0, results=FALSE}
+raw_data[is.na(value), 'value'] <- 0
+```
+
+#### Importing the weather records
+Weather records are store in an excel file. After importing the observations, the date column is converted in date format.
+```{r reading weather, results=FALSE}
+weather <- data.table(read_excel("weather.xlsx"))
+weather$date <- as.Date(weather$date)
+```
+
+Taking an initial look at weather:
+```{r weather initial look}
+head(weather)
+str(weather)
+```
+
+#### Importing additional datasets
+Other than the two main datasets, some other informations might be useful during the analysis. Three additional dataset are therfore loaded:
+
+- `parameters` is a dataset that contains information to relate the parameter ID in `raw_data` with parameter name, formula, unit, ecc..
+
+- `stations` is a dataset that contains information to relate the station ID in `raw_data` with station name, latitude, longitude, type, ecc...
+
+- `holidays` is a list of holidays in Madrid from 2011 to 2016
+
+```{r other datasets, results=FALSE}
+#Reading parameters info
+parameters <- data.table(read.csv("parameters.csv"))
+
+#Reading stations info
+stations <- data.table(read.csv("stations.csv"))
+
+#Reading holidays list and converting to date format
+holidays <- (data.table(read.csv("holidays.csv")))
+holidays$holiday <- as.Date(holidays$holiday)
+```
+
+Taking an initial look at the newly imported datasets:
+```{r other datasets initial look}
+str(parameters)
+str(stations)
+str(holidays)
+```
+
+## Data transformation
+Once the data are all important, the next step is to apply some transformation and create some new variables to accomodate the needs of the analysis.
+
+#### Creating a new dataset `h_data`
+This first transformation create a new dataset `h_data` from `raw_data`, adding a new column `ob_date` by pasting togheter information from `year`, `month` and `day` columns in a format that matches the date format in the `data` column of `weather` dataset. The format of the column is automatically converted to date during import.
+
+```{r date raw_data}
+h_data <- raw_data[ ,ob_date := as.Date(paste0(year,"-",month,"-",day))]
+head(h_data)
+```
+
+#### Subsetting `h_data` to create a daily dataset `daily_data` and merge it with other datasets
+
+The following step create a new dataset `daily_data` with daily obesrvation, averaging the hourly value of every parameter  
+
+``` {r daily data creation}
+daily_data <- h_data[,.(daily_avg=mean(value)), by=.(ob_date,station,parameter)]
+```
+
+The newly created dataset is then merged with an inner join to `weather`, `parameters` and `stations` datasets.
+
+``` {r merging with weather and so on}
+daily_data <- merge(daily_data, weather, by.x="ob_date", by.y="date", all=FALSE)
+daily_data <- merge(daily_data, parameters, by.x="parameter", by.y="param_ID", all = FALSE)
+daily_data <- merge(daily_data, stations, by.x="station", by.y="station_ID", all=FALSE)
+head(daily_data)
+```
+
+

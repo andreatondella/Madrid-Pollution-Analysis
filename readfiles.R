@@ -15,22 +15,26 @@ start <- Sys.time()
 weather <- data.table(read_excel("weather.xlsx"))
 weather$date <- as.Date(weather$date)
 
+str(weather)
 # ===================================================
 
 #Reading parameters info
 parameters <- data.table(read.csv("parameters.csv"))
 
+str(parameters)
 # ===================================================
 
 #Reading stations info
 stations <- data.table(read.csv("stations.csv"))
 
+str(stations)
 # ===================================================
 
 #Reading holidays list and converting to date format
 holidays <- (data.table(read.csv("holidays.csv")))
 holidays$holiday <- as.Date(holidays$holiday)
 
+str(holidays)
 # ===================================================
 
 
@@ -50,6 +54,7 @@ raw_data[is.na(value), 'value'] <- 0
 
 head(raw_data)
 tail(raw_data)
+str(raw_data)
 
 # # ===================================================
 # 
