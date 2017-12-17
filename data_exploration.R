@@ -37,7 +37,7 @@ quantile(NO2, seq(0,1,0.1))
 p0_NO2<-qplot(x=1:length(NO2),y=NO2, geom='point')
 p1_NO2<-qplot(NO2, geom='histogram')
 p2_NO2<-qplot(NO2, geom='density')
-p3_NO2<-qplot(NO2, x= 1, geom = "boxplot")
+p3_NO2<-qplot(NO2, x= 1, geom = "boxplot")h
 p_NO2<-list(p0_NO2,p1_NO2, p2_NO2, p3_NO2)
 marrangeGrob(p_NO2, nrow=2, ncol=2)
 
