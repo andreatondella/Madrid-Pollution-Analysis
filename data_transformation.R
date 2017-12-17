@@ -19,6 +19,8 @@ start <- Sys.time()
 # head(h_data)
 
 h_data <- raw_data[ ,ob_date := as.Date(paste0(year,"-",month,"-",day))]
+h_data <- merge(h_data, parameters, by.x="parameter", by.y="param_ID", all = FALSE)
+h_data <- merge(h_data, stations, by.x="station", by.y="station_ID", all=FALSE)
 head(h_data)
 
 # h_data$year <- NULL
