@@ -2,7 +2,7 @@
 library(leaflet)
 
 # load example data (Fiji Earthquakes) + keep only 100 first lines
-map_data = data.table(subset(daily_data_pp, ob_date == "2016-10-30", c("Lng", "Lat", "NO2", "temp_avg", "station_Name", "Alt", "Type")))
+map_data = subset(daily_data_pp, ob_date == "2016-10-30", c("Lng", "Lat", "NO2", "temp_avg", "station_Name", "Alt", "Type"))
 min_v <- min(map_data$NO2)
 max_v <- max(map_data$NO2)
 
