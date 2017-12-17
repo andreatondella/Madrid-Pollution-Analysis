@@ -6,29 +6,24 @@ library(lubridate) # for easy date manipulation
 library(ggExtra) # because remembering ggplot theme options is beyond me
 library(tidyr) 
 
+h_data <- as.data.table(h_data)
+#data<- data(h_data,package = "Interpol.T")
 
-data<- data(Trentino_hourly_T,package = "Interpol.T")
+# 
 
-names(h_d_t)[1:5]<- c("stationid","date","hour","temp","flag")
-df<- tbl_df(h_d_t) %>%
-  filter(stationid =="T0001")
-
-df<- df %>% mutate(year = year(date),
-                   month = month(date, label=TRUE),
-                   day = day(date))
-
-df$date<-ymd(df$date) # not necessary for plot but 
-#useful if you want to do further work with the data
-
-#cleanup
-rm(list=c("h_d_t","mo_bias","Tn","Tx",
-          "Th_int_list","calibration_l",
-          "calibration_shape","Tm_list"))
+# 
+# df$date<-ymd(df$date) # not necessary for plot but 
+# #useful if you want to do further work with the data
+# 
+# #cleanup
+# rm(list=c("h_d_t","mo_bias","Tn","Tx",
+#           "Th_int_list","calibration_l",
+#           "calibration_shape","Tm_list"))
 
 
 #create plotting df
-df <-df %>% select(stationid,day,hour,month,year,temp)%>%
-  fill(temp) #optional - see note below
+df <- subset(h_data, year == "2011" & station == "28079004" & parameter == "8", c("day", "month", "year", "hour", "value"))
+#fill(temp) #optional - see note below
 
 # Re: use of fill
 # This code is for demonstrating a visualisation technique
@@ -44,21 +39,18 @@ df <-df %>% select(stationid,day,hour,month,year,temp)%>%
 # OR 
 # Look into more specialist way of replacing these missing values -e.g. imputation.
 
-
-
-statno <-unique(df$stationid)
-
-
-
+df$day <- as.numeric(df$day)
+df$hour <- as.numeric(df$hour)
+df$month <- as.numeric(df$month)
+df$year <- as.numeric(df$year)
+df$value <- as.numeric(df$value)
 ######## Plotting starts here#####################
-p <-ggplot(df,aes(day,hour,fill=temp))+
-  geom_tile(color= "white",size=0.1) + 
-  scale_fill_viridis(name="Hrly Temps C",option ="C")
+p <-ggplot(df,aes(day,hour,fill=as.numeric(value))) + geom_tile(color= "white",size=0.1) + scale_fill_viridis_c(name="Hrly Temps C",option ="C")
 p <-p + facet_grid(year~month)
 p <-p + scale_y_continuous(trans = "reverse", breaks = unique(df$hour))
 p <-p + scale_x_continuous(breaks =c(1,10,20,31))
 p <-p + theme_minimal(base_size = 8)
-p <-p + labs(title= paste("Hourly Temps - Station",statno), x="Day", y="Hour Commencing")
+p <-p + labs(title= paste("Hourly Temps - Station","statno"), x="Day", y="Hour Commencing")
 p <-p + theme(legend.position = "bottom")+
   theme(plot.title=element_text(size = 14))+
   theme(axis.text.y=element_text(size=6)) +
