@@ -18,6 +18,7 @@ library(ggplot2)
 library(gridExtra)
 library(corrplot)
 library(plotly)
+library(shiny)
 ```
 ## Introduction
 
@@ -122,9 +123,14 @@ daily_data <- merge(daily_data, stations, by.x="station", by.y="station_ID", all
 head(daily_data)
 ```
 
-```{r trial}
-library(shiny)
+```{r trial, echo=FALSE}
+h_data <- merge(h_data, parameters, by.x="parameter", by.y="param_ID", all = FALSE)
+h_data <- merge(h_data, stations, by.x="station", by.y="station_ID", all=FALSE)
 
+shinyApp(
+  
+options=list(width="100%", height=1000),
+  
 ui <- shinyUI(fluidPage(
   titlePanel("Pollution heatmap"),
   
@@ -151,11 +157,14 @@ ui <- shinyUI(fluidPage(
   
   plotOutput("heatmap", width = "100%", height = 700)
 )
-)
+),
 
 server <- shinyServer(function(input,output) {
+  
+
+  
   output$heatmap = renderPlot({
-    
+      df <- subset(h_data, year == input$year & station_Name == input$station & param_Form == input$pollutant, c("day", "month", "year", "hour", "value"))
     library(ggplot2)
     library(dplyr) # easier data wrangling 
     library(viridis) # colour blind friendly palette, works in B&W also
@@ -164,7 +173,7 @@ server <- shinyServer(function(input,output) {
     library(ggExtra) # because remembering ggplot theme options is beyond me
     library(tidyr) 
     
-    df <- subset(h_data, year == input$year & station_Name == input$station & param_Form == input$pollutant, c("day", "month", "year", "hour", "value"))
+    
     df$day <- as.numeric(df$day)
     df$hour <- as.numeric(df$hour)
     df$month <- as.numeric(df$month)
@@ -190,8 +199,8 @@ server <- shinyServer(function(input,output) {
     
   })
 })
-
-# Run the application 
-shinyApp(ui = ui, server = server)
+)
 
 ```
+
+#### DAI CAZZO

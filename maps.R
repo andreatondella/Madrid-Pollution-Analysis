@@ -2,7 +2,7 @@
 library(leaflet)
 
 # load example data (Fiji Earthquakes) + keep only 100 first lines
-map_data = subset(daily_data_pp, ob_date == "2016-10-30", c("Lng", "Lat", "NO2", "temp_avg", "station_Name", "Alt", "Type"))
+map_data = data.table(subset(daily_data_pp, ob_date == "2016-10-30", c("Lng", "Lat", "NO2", "temp_avg", "station_Name", "Alt", "Type")))
 min_v <- min(map_data$NO2)
 max_v <- max(map_data$NO2)
 
@@ -17,9 +17,7 @@ mytext=paste("Station: ", map_data$station_Name, "<br/>", "Value: ", round(map_d
 # Final Map
 style <- providers$Stamen.Toner
 leaflet(map_data) %>%  
-  #addProviderTiles(providers$MtbMap) %>%
-  #addProviderTiles(providers$Stamen.TonerLines,options = providerTileOptions(opacity = 0.35)) %>%
-  #addProviderTiles(providers$Stamen.TonerLabels)
+  
   addTiles() %>% 
   
   #clearBounds()
@@ -32,4 +30,4 @@ leaflet(map_data) %>%
                    label = mytext,
                    labelOptions = labelOptions( style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "13px", direction = "auto")
   ) %>%
-  addLegend( pal=mypalette, values=~NO2, opacity=0.9, title = "NO2 microg/m^3", position = "bottomright" )
+  addLegend( pal=mypalette, values=~NO2, opacity=0.9, title = "microg/m^3", position = "bottomright" )
