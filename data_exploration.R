@@ -12,9 +12,9 @@ source("lib_loading.R")
 # ===================================================
 
 # Some scientific facts about our parameters:
-
+# 
 # There are three tipe of sources for our pollutants:
-#   
+# 
 # CARS: BEN, CO, EBE, NMHC, NO, NO2, PM10, PM2.5
 # 
 # INDUSTRIES: SO2, TOL, NMHC
@@ -43,6 +43,9 @@ marrangeGrob(p_NO2, nrow=2, ncol=2)
 
 NO2_mean <- mean(NO2)
 NO2_sd <- sd(NO2)
+
+NO2_mean
+NO2_sd
 
 # 50, 100 and 150 are reccomended threshold values for NO2
 # https://www3.epa.gov/airnow/no2.pdf
