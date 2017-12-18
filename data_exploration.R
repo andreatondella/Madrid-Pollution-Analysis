@@ -137,3 +137,6 @@ boxplot(daily_data_pp$NO2~daily_data_pp$restday+month(daily_data_pp$ob_date),
 
 boxplot(daily_data_pp$NO2~daily_data_pp$workday+year(daily_data_pp$ob_date),
         main='NO2 by workday and year'); grid()
+
+boxplot(daily_data_pp$NO2~daily_data_pp$wind_avg_speed,
+        main='NO2 by wind_avg_speed'); grid()
