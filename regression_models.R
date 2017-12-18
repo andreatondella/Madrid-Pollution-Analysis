@@ -49,6 +49,9 @@ boxplot(rmodel$residuals,main='boxplot'); grid()
 # ===================================================
 # Build regression model on weather parameters.
 # ===================================================
+
+# Try not to pass a list of more than 4 data tables to this function.
+#   Reason : It plots 4 graphs for each data table. The plot space will be too cluttered to read.
 check_weather_model <- function(data_table_list) {
   par(mfrow=c(length(data_table_list),4))
   lapply(data_table_list, function(x) {
