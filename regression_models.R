@@ -33,12 +33,6 @@ confint(rmodel,parm = 'PM2.5', level = 0.95)
 confint(rmodel,parm = 'SO2', level = 0.95)
 confint(rmodel,parm = 'TCH', level = 0.95)
 confint(rmodel,parm = 'TOL', level = 0.95)
-corrplot( cor(daily_data_pp[,c('temp_avg', 'temp_max',
-                               'precipitation', 'humidity', 'wind_avg_speed',
-                               # 'week_day', 'week_day', 'restday',
-                               'CO', 'NO', 'O3', 'PM2.5', 'SO2', 'TCH', 'TOL')]),
-          method = 'number', tl.col = 'black', type = 'lower',
-          number.cex = 0.5, order='hclust')
 
 summary(rmodel$residuals)
 plot(rmodel$residuals)
