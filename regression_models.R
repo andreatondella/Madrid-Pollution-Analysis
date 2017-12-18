@@ -13,7 +13,7 @@ source("lib_loading.R")
 
 # All models are for NO2
 # ===================================================
-# Regression model with all variables
+# First run a regression model with all variables
 # ===================================================
 rmodel <- lm(NO2~., data=daily_data_pp)
 summary(rmodel)
