@@ -49,17 +49,17 @@ head(daily_data)
 # ===================================================
 
 # Expand the parameter column in many columns one for each parameter
-
 daily_data_pp <- daily_data
 daily_data_pp <- daily_data_pp[ ,c("param_Name", "param_unit", "parameter") := NULL]
 daily_data_pp <- data.table(tidyr::spread(daily_data_pp, param_Form, daily_avg))
+str(daily_data_pp)
 
 # Expand the stations column in many columns one for each station
-daily_data_ps <- daily_data
-daily_data_ps <- daily_data_ps[ ,c("station", "station_loc", "Lat", "Lng") := NULL]
-daily_data_ps <- data.table(tidyr::spread(daily_data_ps, station_Name, daily_avg))
-
-# ===================================================
+# daily_data_ps <- daily_data
+# daily_data_ps <- daily_data_ps[ ,c("station", "station_loc", "Lat", "Lng") := NULL]
+# daily_data_ps <- data.table(tidyr::spread(daily_data_ps, station_Name, daily_avg))
+# str(daily_data_pp)
+# # ===================================================
 
 # Subsetting daily_data_pp keeping only rows without NAs
 daily_data_pp_cc <- daily_data_pp[complete.cases(daily_data_pp), ]
