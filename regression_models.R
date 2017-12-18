@@ -47,6 +47,23 @@ qqnorm(rmodel$residuals); grid()
 boxplot(rmodel$residuals,main='boxplot'); grid()
 
 # ===================================================
+summer_months <- c(4:9)
+summer_workdays <- daily_data_pp[(month(ob_date) %in% summer_months) & (workday == T) & !is.na(NO2)]
+summer_restdays <- daily_data_pp[(month(ob_date) %in% summer_months) & (workday == F) & !is.na(NO2)]
+winter_workdays <- daily_data_pp[!(month(ob_date) %in% summer_months) & (workday == T) & !is.na(NO2)]
+winter_restdays <- daily_data_pp[!(month(ob_date) %in% summer_months) & (workday == F) & !is.na(NO2)]
+
+model_summer_workdays <- lm(NO2~temp_avg + wind_avg_speed + precipitation, data = summer_workdays)
+model_summer_restdays <- lm(NO2~temp_avg + wind_avg_speed + precipitation, data = summer_restdays)
+model_winter_workdays <- lm(NO2~temp_avg + wind_avg_speed + precipitation, data = winter_workdays)
+model_winter_restdays <- lm(NO2~temp_avg + wind_avg_speed + precipitation, data = winter_restdays)
+
+summary(model_summer_workdays)
+summary(model_summer_restdays)
+summary(model_winter_workdays)
+summary(model_winter_restdays)
+
+# ===================================================
 # First model. Filter data by average temperatures
 #   above & below 10 degree C
 # ===================================================
