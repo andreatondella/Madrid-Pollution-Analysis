@@ -49,7 +49,7 @@ boxplot(rmodel$residuals,main='boxplot'); grid()
 check_weather_model <- function(data_table_list) {
   par(mfrow=c(length(data_table_list),4))
   lapply(data_table_list, function(x) {
-    linear_model <- lm(NO2~temp_avg + wind_avg_speed + SO2 + TOL, data = x)
+    linear_model <- lm(NO2~temp_avg + wind_avg_speed, data = x)
     print(summary(linear_model))
     print(confint(linear_model, 'temp_avg', level = 0.95))
     print(confint(linear_model, 'wind_avg_speed', level = 0.95))
