@@ -197,3 +197,268 @@ corrplot(cor(daily_data_pp[complete.cases(daily_data_pp), c("BEN","CO","EBE","NM
 ```{r coorplot2}
 corrplot(cor(daily_data_pp[complete.cases(daily_data_pp), c("temp_avg", "humidity", "wind_avg_speed", "precipitation", "NO2", "O3")]), method = 'number', tl.col = 'black', order='hclust')
 ```
+
+```{r trial4, echo=FALSE}
+
+
+shinyApp(
+
+options=list(width="100%", height=1000),
+
+ui <- shinyUI(fluidPage(
+  titlePanel("Pollution heatmap"),
+
+  fluidRow(
+    column(width = 3,
+           helpText("Select a pollutant"),
+           selectInput("pollutant", label = "Pollutant",
+                       choices = parameters$param_Form, selected = 1)
+    ),
+    #column(width = 1),
+    column(width = 3,
+           helpText("Select a station"),
+           selectInput("station", label = "Station",
+                       choices = stations$station_Name, selected = 28079004)
+    ),
+    column(width = 3,
+           helpText("Select a year"),
+           selectInput("year", label = "Year",
+                       choices = unique(h_data$year),
+                       selected = 2011)
+    )
+
+  ),
+
+  plotOutput("heatmap", width = "100%", height = 700)
+)
+),
+
+server <- shinyServer(function(input,output) {
+
+
+
+  output$heatmap = renderPlot({
+      df <- subset(h_data, year == input$year & station_Name == input$station & param_Form == input$pollutant, c("day", "month", "year", "hour", "value"))
+    library(ggplot2)
+    library(dplyr) # easier data wrangling
+    library(viridis) # colour blind friendly palette, works in B&W also
+    library(Interpol.T) #  will generate a large dataset on initial load
+    library(lubridate) # for easy date manipulation
+    library(ggExtra) # because remembering ggplot theme options is beyond me
+    library(tidyr)
+
+
+    df$day <- as.numeric(df$day)
+    df$hour <- as.numeric(df$hour)
+    df$month <- as.numeric(df$month)
+    df$year <- as.numeric(df$year)
+    df$value <- as.numeric(df$value)
+    plot(ggplot(df,aes(day,hour,fill=as.numeric(value))) + geom_tile(color= "white",size=0.1)
+         + scale_fill_viridis_c(name="Hourly Value (microg/m^3)  ",option ="C")
+         + facet_grid(year~month)
+         + scale_y_continuous(trans = "reverse", breaks = unique(df$hour))
+         + scale_x_continuous(breaks =c(1,10,20,31))
+         + theme_minimal(base_size = 8)
+         + labs(title= paste("Hourly Pollution values - Station", input$station), x="Day", y="Hour")
+         + theme(legend.position = "bottom")+
+           theme(plot.title=element_text(size = 14))+
+           theme(axis.text.y=element_text(size=6)) +
+           theme(strip.background = element_rect(colour="white"))+
+           theme(plot.title=element_text(hjust=0))+
+           theme(axis.ticks=element_blank())+
+           theme(axis.text=element_text(size=7))+
+           theme(legend.title=element_text(size=8))+
+           theme(legend.text=element_text(size=6))+
+           removeGrid())
+
+  })
+})
+)
+
+```
+
+```{r trial3, echo=FALSE}
+
+library(shiny)
+
+shinyApp(
+
+options=list(width="100%", height=1000),
+
+ui <- shinyUI(fluidPage(
+  titlePanel("Pollution map"),
+
+  fluidRow(
+    column(width = 3,
+           helpText("Select a pollutant"),
+           selectInput("pollutant", label = "Pollutant",
+                       choices = parameters$param_Form, selected = 1)
+    ),
+
+    column(width = 3,
+           helpText("Select a day"),
+           dateInput("date", label = "Day", value = "2011-01-01", min = "2011-01-01", max = "2012-12-31",
+                     format = "yyyy-mm-dd")
+
+    )
+
+  ),
+
+  leafletOutput("map", width = "100%", height = 500)
+)
+),
+
+server <- shinyServer(function(input,output) {
+  output$map = renderLeaflet({
+
+    library(leaflet)
+
+    # load example data (Fiji Earthquakes) + keep only 100 first lines
+    map_data = subset(daily_data, ob_date == input$date & param_Form == input$pollutant, c("Lng", "Lat", "temp_avg", "station_Name", "Alt", "Type", "daily_avg"))
+    min_v <- min(map_data$daily_avg)
+    max_v <- max(map_data$daily_avg)
+
+    # Create a color palette with handmade bins.
+    mybins=seq(min_v, max_v, by=(max_v-min_v)/9)
+    mypalette = colorBin( palette="YlOrRd", domain=map_data$daily_avg, na.color="black", bins=mybins)
+
+    # Prepar the text for the tooltip:
+    mytext=paste("Station: ", map_data$station_Name, "<br/>", paste0(input$pollutant, " value (microg/m^3): "), round(map_data$daily_avg, 1), "<br/>", "Temperature: ", map_data$temp_avg, "<br/>", "Altitude: ", map_data$Alt, "<br/>", "Station Type: ", map_data$Type, sep="") %>%
+      lapply(htmltools::HTML)
+
+    # Final Map
+    style <- providers$Stamen.Toner
+    leaflet(map_data) %>%
+
+      addTiles() %>%
+
+      #clearBounds()
+      fitBounds(map_data$Lng[22],map_data$Lat[22],map_data$Lng[8],map_data$Lat[5]) %>%
+      addProviderTiles("Esri.WorldImagery") %>%
+      addProviderTiles(providers$Esri.WorldGrayCanvas) %>% addProviderTiles(providers$Stamen.TonerLabels) %>%
+      addProviderTiles(providers$Stamen.TonerLines,options = providerTileOptions(opacity = 0.35)) %>%
+      addCircleMarkers(~Lng, ~Lat,
+                       fillColor = ~mypalette(daily_avg), fillOpacity = 0.7, color="white", radius=25, stroke=F,
+                       label = mytext,
+                       labelOptions = labelOptions( style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "13px", direction = "auto")
+      ) %>%
+      addLegend( pal=mypalette, values=~daily_avg, opacity=0.9, title = paste0(input$pollutant, " (microg/m^3)"), position = "bottomright" )
+
+  })
+})
+)
+
+```
+
+```{r trial, echo=FALSE}
+
+library(shiny)
+
+shinyApp(
+
+options=list(width="100%", height=1000),
+
+ui <- shinyUI(fluidPage(
+  titlePanel("Time series"),
+
+  fluidRow(
+    column(width = 3,
+           helpText("Select a pollutant"),
+           selectInput("pollutant1", label = "Pollutant",
+                       choices = parameters$param_Form, selected = 1)
+    ),
+
+    column(width = 3,
+           helpText("Select a pollutant"),
+           selectInput("pollutant2", label = "Pollutant",
+                       choices = parameters$param_Form, selected = 1)
+    )
+
+  ),
+
+  dygraphOutput("timeseries", width = "100%", height = 700)
+)
+),
+
+server <- shinyServer(function(input,output) {
+  output$timeseries = renderDygraph({
+
+    library(dygraphs)
+    library(tidyverse)
+    library(lubridate)
+
+    ts1 <- daily_data_pp
+
+    ts1 <- ts1[complete.cases(ts1), ]
+
+    ts1 <- subset(ts1, , c("ob_date", input$pollutant1,input$pollutant2))
+
+    dygraph(ts1) %>%
+      dyAxis("y") %>%
+      dyAxis('y2') %>%
+      dySeries(input$pollutant1, axis = "y", label = input$pollutant1)  %>%
+      dySeries(input$pollutant2, axis = "y2", label = input$pollutant2)  %>%
+      dyOptions(stackedGraph = TRUE) %>%
+      dyRangeSelector()
+
+  })
+})
+)
+
+```
+
+```{r trial1, echo=FALSE}
+
+library(shiny)
+
+shinyApp(
+
+options=list(width="100%", height=1000),
+
+ui <- shinyUI(fluidPage(
+  titlePanel("Time series"),
+
+  fluidRow(
+    column(width = 3,
+           helpText("Select a pollutant"),
+           selectInput("pollutant", label = "Pollutant",
+                       choices = parameters$param_Form, selected = 1)
+    ),
+
+    column(width = 3,
+           helpText("Select a pollutant"),
+           selectInput("weather", label = "Weather",
+                       choices = colnames(weather), selected = "wind_avg_speed")
+    )
+
+  ),
+
+  dygraphOutput("timeseries2", width = "100%", height = 700)
+)
+),
+
+server <- shinyServer(function(input,output) {
+  output$timeseries2 = renderDygraph({
+
+    library(dygraphs)
+    library(tidyverse)
+    library(lubridate)
+
+    ts2 <- daily_data_pp
+    ts2 <- ts2[complete.cases(ts2), ]
+
+    ts2 <- subset(ts2, , c("ob_date", input$pollutant,input$weather))
+
+    dygraph(ts2) %>%
+      dyAxis("y") %>%
+      dyAxis('y2') %>%
+      dySeries(input$pollutant, axis = "y", label = input$pollutant)  %>%
+      dySeries(input$weather, axis = "y2", label = input$weather)  %>%
+      dyOptions(stackedGraph = TRUE) %>%
+      dyRangeSelector()
+
+  })
+})
+)
+```
+
