@@ -49,7 +49,7 @@ boxplot(rmodel$residuals,main='boxplot'); grid()
 check_weather_model <- function(data_table_list) {
   par(mfrow=c(length(data_table_list),4))
   lapply(data_table_list, function(x) {
-    linear_model <- lm(NO2~temp_avg + wind_avg_speed, data = x)
+    linear_model <- lm(NO2~temp_avg + wind_avg_speed + SO2 + TOL, data = x)
     print(summary(linear_model))
     print(confint(linear_model, 'temp_avg', level = 0.95))
     print(confint(linear_model, 'wind_avg_speed', level = 0.95))
@@ -72,7 +72,6 @@ summer_workdays <- daily_data_pp[(month(ob_date) %in% summer_months) & (workday 
 summer_restdays <- daily_data_pp[(month(ob_date) %in% summer_months) & (workday == F) & !is.na(NO2)]
 winter_workdays <- daily_data_pp[!(month(ob_date) %in% summer_months) & (workday == T) & !is.na(NO2)]
 winter_restdays <- daily_data_pp[!(month(ob_date) %in% summer_months) & (workday == F) & !is.na(NO2)]
-
 
 list_of_data_tables <- list(summer_workdays, summer_restdays, winter_workdays, winter_restdays)
 length(list_of_data_tables)

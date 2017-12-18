@@ -22,6 +22,7 @@ library(plotly)
 library(shiny)
 library(dygraphs)
 library(leaflet)
+library(viridis)
 ```
 ## Introduction
 
@@ -242,7 +243,7 @@ server <- shinyServer(function(input,output) {
     library(ggplot2)
     library(dplyr) # easier data wrangling
     library(viridis) # colour blind friendly palette, works in B&W also
-    library(Interpol.T) #  will generate a large dataset on initial load
+    #library(Interpol.T) #  will generate a large dataset on initial load
     library(lubridate) # for easy date manipulation
     library(ggExtra) # because remembering ggplot theme options is beyond me
     library(tidyr)
@@ -254,7 +255,7 @@ server <- shinyServer(function(input,output) {
     df$year <- as.numeric(df$year)
     df$value <- as.numeric(df$value)
     plot(ggplot(df,aes(day,hour,fill=as.numeric(value))) + geom_tile(color= "white",size=0.1)
-         + scale_fill_viridis_c(name="Hourly Value (microg/m^3)  ",option ="C")
+         + scale_fill_viridis(name="Hourly Value (microg/m^3)  ",option ="C")
          + facet_grid(year~month)
          + scale_y_continuous(trans = "reverse", breaks = unique(df$hour))
          + scale_x_continuous(breaks =c(1,10,20,31))
@@ -391,7 +392,7 @@ server <- shinyServer(function(input,output) {
 
     ts1 <- ts1[complete.cases(ts1), ]
 
-    ts1 <- subset(ts1, , c("ob_date", input$pollutant1,input$pollutant2))
+    ts1 <- subset(ts1, select = c("ob_date", input$pollutant1,input$pollutant2))
 
     dygraph(ts1) %>%
       dyAxis("y") %>%
@@ -447,7 +448,7 @@ server <- shinyServer(function(input,output) {
     ts2 <- daily_data_pp
     ts2 <- ts2[complete.cases(ts2), ]
 
-    ts2 <- subset(ts2, , c("ob_date", input$pollutant,input$weather))
+    ts2 <- subset(ts2, select = c("ob_date", input$pollutant,input$weather))
 
     dygraph(ts2) %>%
       dyAxis("y") %>%
