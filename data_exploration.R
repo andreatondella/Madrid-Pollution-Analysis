@@ -112,10 +112,10 @@ print(NO2_O3_p4+ggtitle('NO2 vs O3'))
 
 # BOXPLOTS FOR EXPLORATION AND FILTERING DATA
 boxplot(daily_data_pp$NO2~daily_data_pp$temp_avg,
-        main='NO2 by month'); grid()
+        main='NO2 by month and temp'); grid()
 
 boxplot(daily_data_pp$CO~daily_data_pp$temp_avg,
-        main='CO by month'); grid()
+        main='CO by month and temp'); grid()
 
 boxplot(daily_data_pp$NO2~daily_data_pp$workday,
         main='NO2 by workday'); grid()
@@ -127,4 +127,10 @@ boxplot(daily_data_pp$NO2~month(daily_data_pp$ob_date)+daily_data_pp$week_day,
         main='NO2 by month & weekday'); grid()
 
 boxplot(daily_data_pp$NO2~daily_data_pp$workday+daily_data_pp$restday+month(daily_data_pp$ob_date),
-        main='NO2 by weekday'); grid()
+        main='NO2 by workday and restday'); grid()
+
+boxplot(daily_data_pp$NO2~daily_data_pp$workday+month(daily_data_pp$ob_date),
+        main='NO2 by workday and month'); grid()
+
+boxplot(daily_data_pp$NO2~daily_data_pp$restday+month(daily_data_pp$ob_date),
+        main='NO2 by restday and month'); grid()
