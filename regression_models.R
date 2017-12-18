@@ -17,6 +17,29 @@ source("lib_loading.R")
 # ===================================================
 rmodel <- lm(NO2~., data=daily_data_pp)
 summary(rmodel)
+confint(rmodel,parm = 'temp_avg', level = 0.95)
+confint(rmodel,parm = 'temp_max', level = 0.95)
+confint(rmodel,parm = 'temp_min', level = 0.95)
+confint(rmodel,parm = 'precipitation', level = 0.95)
+confint(rmodel,parm = 'humidity', level = 0.95)
+confint(rmodel,parm = 'wind_avg_speed', level = 0.95)
+confint(rmodel,parm = 'week_dayMonday', level = 0.95)
+confint(rmodel,parm = 'week_daySaturday', level = 0.95)
+confint(rmodel,parm = 'restdayTRUE', level = 0.95)
+confint(rmodel,parm = 'CO', level = 0.95)
+confint(rmodel,parm = 'NO', level = 0.95)
+confint(rmodel,parm = 'O3', level = 0.95)
+confint(rmodel,parm = 'PM2.5', level = 0.95)
+confint(rmodel,parm = 'SO2', level = 0.95)
+confint(rmodel,parm = 'TCH', level = 0.95)
+confint(rmodel,parm = 'TOL', level = 0.95)
+corrplot( cor(daily_data_pp[,c('temp_avg', 'temp_max',
+                               'precipitation', 'humidity', 'wind_avg_speed',
+                               # 'week_day', 'week_day', 'restday',
+                               'CO', 'NO', 'O3', 'PM2.5', 'SO2', 'TCH', 'TOL')]),
+          method = 'number', tl.col = 'black', type = 'lower',
+          number.cex = 0.5, order='hclust')
+
 summary(rmodel$residuals)
 plot(rmodel$residuals)
 hist(rmodel$residuals)
