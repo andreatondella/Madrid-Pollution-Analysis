@@ -1,8 +1,8 @@
 ---
-title: "Air quality in Madrid"
-subtitle: "An analysis of pollutants trends in the city of Madrid from 2011 to 2016"
-author: "Group 2"
-date: "12/17/2017"
+title: "Air quality in Madrid: an introduction" 
+subtitle: "An introductory explanatory analysis of pollutants trends in the city of Madrid from 2011 to 2016."
+author: "MBD - Group 2"
+date: 
 output: html_document
 runtime: shiny
 ---
@@ -23,18 +23,26 @@ library(shiny)
 library(dygraphs)
 library(leaflet)
 ```
+GitHub repository: <em>https://github.com/eccheandre/R_group_assignment/tree/beta</em>
+
+<br>
+
 ## Introduction
 
-INSERT INTRODUCTION
+Air quality in Madrid in terms of pollutant levels is analyzed for a period of 6 years from 2011 to 2016. The dataset from the municipality of Madrid contains hourly observations regarding 12 different air pollutants measured by 24 different stations spreaded across the city and its suburbs. The dataset is further integrated with daily weather observations. The dataset is then transformed to accommodate a deep exploratory analysis performed mainly through time series and multiple boxplots. With the knowledge gained, a regression analysis is performed to describe the influence of weather conditions on the level of NO~2~ in the air.
+
+***
 
 ## Importing the initial datasets
-The analysis is based in two main datasets, one containing information about tha pollutant parameters, measured at an hourly level in 24 different stations and the other conntaining information about the weather at a daily level
+The analysis is based in two main datasets, one containing information about tha pollutant parameters and the other conntaining information about the weather at a daily level. Some additional datasets containing informations regarding parameters, stations and holidays are added to enrich the analysis.
 
-#### Importing the pollutants observations
-The observations on pollutants are stored in 72 `.csv` files, each containing the hourly levels of all the parameter for 1 single month. The following function automate the process of reading all the `.csv` files and stores the observations in the initial `raw_data` dataset.
+<br>
+
+#### Importing pollutants observations
+Pollutants observations are stored in `.csv` files, one per each month. Informations on year and month are contained in the file name but not in the dataset. The function automatically import all the files, attaches month and year columns and merge them together in the initial `raw_data` dataset.
 
 ```{r raw_data, results=FALSE}
-years <- c(11:12); months <- c(1:12)
+years <- c(11:16); months <- c(1:12)
 filenameprefix <- "hourly_data"
 raw_data <- data.table(year=integer(), month=integer(), day=character(), hour=integer(),station=integer(), parameter=integer(), value=numeric())
 
@@ -46,38 +54,42 @@ sapply(years, function(x) { sapply(months, function(y) {
 }) })
 ```
 
-Taking an initial look at raw_data:
 ```{r raw_data initial look}
 head(raw_data)
 str(raw_data)
 ```
 
-Converting NA values to zeros
+<br>
+
+Converting `NA` values to zero.
 ```{r raw_data NA <- 0, results=FALSE}
 raw_data[is.na(value), 'value'] <- 0
 ```
 
-#### Importing the weather records
-Weather records are store in an excel file. After importing the observations, the date column is converted in date format.
+<br>
+
+#### Importing weather records
+Weather records are store in an `.xlsx` file. After importing the file, the date column is converted in date format.
 ```{r reading weather, results=FALSE}
 weather <- data.table(read_excel("weather.xlsx"))
 weather$date <- as.Date(weather$date)
 ```
 
-Taking an initial look at weather:
 ```{r weather initial look}
 head(weather)
 str(weather)
 ```
 
+<br>
+
 #### Importing additional datasets
-Other than the two main datasets, some other informations might be useful during the analysis. Three additional dataset are therfore loaded:
+The remaining datasets are loaded in the environment.
 
-- `parameters` is a dataset that contains information to relate the parameter ID in `raw_data` with parameter name, formula, unit, ecc..
+- `parameters` is a dataset that contains information to relate the pollutant ID in `raw_data` with pollutant name, formula and measurement unit.
 
-- `stations` is a dataset that contains information to relate the station ID in `raw_data` with station name, latitude, longitude, type, ecc...
+- `stations` is a dataset that contains information to relate the station ID in `raw_data` with station name, location,  GPS coordinates, altitude and type. 
 
-- `holidays` is a list of holidays in Madrid from 2011 to 2016
+- `holidays` is a list of all the holidays in Madrid from 2011 to 2016.
 
 ```{r other datasets, results=FALSE}
 #Reading parameters info
@@ -91,122 +103,55 @@ holidays <- (data.table(read.csv("holidays.csv")))
 holidays$holiday <- as.Date(holidays$holiday)
 ```
 
-Taking an initial look at the newly imported datasets:
 ```{r other datasets initial look}
 str(parameters)
 str(stations)
 str(holidays)
 ```
 
-## Data transformation
-Once the data are all important, the next step is to apply some transformation and create some new variables to accomodate the needs of the analysis.
+***
 
-#### Creating a new dataset `h_data`
-This first transformation create a new dataset `h_data` from `raw_data`, adding a new column `ob_date` by pasting togheter information from `year`, `month` and `day` columns in a format that matches the date format in the `data` column of `weather` dataset. The format of the column is automatically converted to date during import.
+## Data transformation
+The datasets are all imported and stored separately. The next step is to transform them into new tables to better serve the analysis.
+
+<br>
+
+#### Creating a new dataset
+This first transformation takes `raw_data` and creates a new dataset `h_data`, adding a new column `ob_date` by pasting togheter the information from `year`, `month` and `day` columns in a format that matches the date format in the `data` column of the `weather` dataset. The format of the column is automatically converted to date during import.
 
 ```{r date raw_data}
 h_data <- raw_data[ ,ob_date := as.Date(paste0(year,"-",month,"-",day))]
+```
+
+<br>
+
+The newly created `h_data` is then merged with an inner join to `parameters` and `stations`.
+```{r merge raw_data}
 h_data <- merge(h_data, parameters, by.x="parameter", by.y="param_ID", all = FALSE)
 h_data <- merge(h_data, stations, by.x="station", by.y="station_ID", all=FALSE)
 head(h_data)
 
 ```
 
-#### Subsetting `h_data` to create a daily dataset `daily_data` and merge it with other datasets
+<br>
 
-The following step create a new dataset `daily_data` with daily obesrvation, averaging the hourly value of every parameter  
+#### Pollutant heatmap
+The interactive heatmap presented here allows for an initial look at the data. The parameter's value for the selected year is shown at an hourly resolution. 
+Two conclusions can be derived from this plot:
 
-``` {r daily data creation}
-daily_data <- h_data[,.(daily_avg=mean(value)), by=.(ob_date,station,parameter)]
-```
+- The missing values are not evenly distributed between all the parameters.
 
-The newly created dataset is then merged with an inner join to `weather`dataset.
+- Some of the stations record only a subset of the parameters.
 
-``` {r merging with weather and so on}
-daily_data <- merge(daily_data, weather, by.x="ob_date", by.y="date", all=FALSE)
-daily_data <- merge(daily_data, parameters, by.x="parameter", by.y="param_ID", all = FALSE)
-daily_data <- merge(daily_data, stations, by.x="station", by.y="station_ID", all=FALSE)
-head(daily_data)
-```
-
-Let's now add some information about the days of the week,
-```{r day of the week}
-daily_data[ ,week_day:=weekdays(ob_date)]
-```
-
-And create dummy variables for workdays and restdays.
-```{r dummy days}
-daily_data[ ,restday := ((daily_data$week_day %in% c("Saturday", "Sunday")) | (daily_data$ob_date %in% holidays$holiday)) ]
-daily_data[ ,workday := !(daily_data$restday)]
-
-head(daily_data)
-```
-
-The next transformation expand the parameter column into many, each one for a different parameter:
-```{r many columns}
-daily_data_pp <- daily_data
-daily_data_pp <- daily_data_pp[ ,c("param_Name", "param_unit", "parameter") := NULL]
-daily_data_pp <- data.table(tidyr::spread(daily_data_pp, param_Form, daily_avg))
-str(daily_data_pp)
-```
-
-
-## Data exploration
-
-Prior to the exploration of the data, it is useful to understand some scientific facts about the pollutants 
-
-#### Single variable analysis on NO2
-
-```{r NO2}
-NO2 <- daily_data_pp$NO2[!is.na(daily_data_pp$NO2)]
-quantile(NO2, seq(0,1,0.1))
-```
-
-```{r NO2plot, results='hide'}
-p0_NO2<-qplot(x=1:length(NO2),y=NO2, geom='point')
-p1_NO2<-qplot(NO2, geom='histogram')
-p2_NO2<-qplot(NO2, geom='density')
-p3_NO2<-qplot(NO2, x= 1, geom = "boxplot")
-p_NO2<-list(p0_NO2,p1_NO2, p2_NO2, p3_NO2)
-
-marrangeGrob(p_NO2, nrow=2, ncol=2)
-```
-
-```{r NO2mean}
-NO2_mean <- mean(NO2)
-NO2_sd <- sd(NO2)
-
-NO2_mean
-NO2_sd
-```
-
-```{r NO2 col}
-plot(NO2, pch=19, xlab=''); grid()
-abline(50,0,col="chartreuse4")  
-abline(100,0,col="gold") 
-abline(150,0,col="darkorange2")
-points(rep(0,length(NO2)),col='white')
-```
-
-#### Correlation plots
-
-```{r corrp1}
-corrplot(cor(daily_data_pp[complete.cases(daily_data_pp), c("BEN","CO","EBE","NMHC","NO","NO2","O3","PM10","PM2.5","SO2","TCH","TOL")]), method = 'number', tl.col = 'black', order='hclust')
-```
-
-```{r coorplot2}
-corrplot(cor(daily_data_pp[complete.cases(daily_data_pp), c("temp_avg", "humidity", "wind_avg_speed", "precipitation", "NO2", "O3")]), method = 'number', tl.col = 'black', order='hclust')
-```
-
-```{r trial4, echo=FALSE}
+```{r heatmap, echo=FALSE}
 
 
 shinyApp(
 
-options=list(width="100%", height=1000),
+options=list(width="100%", height=900),
 
 ui <- shinyUI(fluidPage(
-  titlePanel("Pollution heatmap"),
+  titlePanel(""),
 
   fluidRow(
     column(width = 3,
@@ -276,6 +221,224 @@ server <- shinyServer(function(input,output) {
 )
 
 ```
+
+
+
+#### Subsetting to create a daily dataset
+The dataset `daily_Data` is created from `h_data` by transforming the hourly observations into daily averages.  
+
+``` {r daily data creation}
+daily_data <- h_data[,.(daily_avg=mean(value)), by=.(ob_date,station,parameter)]
+```
+
+<br>
+
+The observations are then merged with an inner join to `weather` dataset.
+
+``` {r merging with weather}
+daily_data <- merge(daily_data, weather, by.x="ob_date", by.y="date", all=FALSE)
+daily_data <- merge(daily_data, parameters, by.x="parameter", by.y="param_ID", all = FALSE)
+daily_data <- merge(daily_data, stations, by.x="station", by.y="station_ID", all=FALSE)
+```
+
+``` {r merging with weather str}
+head(daily_data)
+```
+
+<br>
+
+The function `week_day` is used to extract informations about the day of the week from the date column of `daily_data`.
+```{r day of the week}
+daily_data[ ,week_day:=weekdays(ob_date)]
+```
+
+<br>
+
+Two dummy variables are created to represent workdays and restdays (defined as combination of weekends and holidays).
+```{r dummy days}
+daily_data[ ,restday := ((daily_data$week_day %in% c("Saturday", "Sunday")) | (daily_data$ob_date %in% holidays$holiday)) ]
+daily_data[ ,workday := !(daily_data$restday)]
+
+head(daily_data)
+```
+
+<br>
+
+The parameter column is expanded into many, one for each pollutant.
+```{r many columns}
+daily_data_pp <- daily_data
+daily_data_pp <- daily_data_pp[ ,c("param_Name", "param_unit", "parameter") := NULL]
+daily_data_pp <- data.table(tidyr::spread(daily_data_pp, param_Form, daily_avg))
+str(daily_data_pp)
+```
+
+***
+
+## Data exploration
+
+Single and bi-variate analysis, time series plots, correlation plots and multi box plots are analyzed.
+
+<br>
+
+#### Single variable analysis on NO~2~
+
+Quantiles of NO~2~.
+```{r NO2}
+NO2 <- daily_data_pp$NO2[!is.na(daily_data_pp$NO2)]
+quantile(NO2, seq(0,1,0.1))
+```
+
+<br>
+
+Mean and standard deviation.
+```{r NO2mean}
+mean(NO2)
+sd(NO2)
+```
+
+<br>
+
+Scatter plot, density function, histogram and boxplot
+```{r NO2plot, results='hide'}
+p0_NO2<-qplot(x=1:length(NO2),y=NO2, geom='point', xlab = paste0("1:", length(NO2)))
+p1_NO2<-qplot(NO2, geom='histogram')
+p2_NO2<-qplot(NO2, geom='density')
+p3_NO2<-qplot(NO2, x= 1, geom = "boxplot")
+p_NO2<-list(p0_NO2,p1_NO2, p2_NO2, p3_NO2)
+
+marrangeGrob(p_NO2, nrow=2, ncol=2)
+```
+
+<br>
+
+Scatter plot
+```{r NO2 col}
+plot(NO2, pch=19, xlab=''); grid()
+abline(50,0,col="chartreuse4")
+abline(100,0,col="gold")
+abline(150,0,col="darkorange2")
+points(rep(0,length(NO2)),col='white')
+```
+
+The distribution of NO~2~ is slightly skewed to the right. The scatter plot shows some possible signs of seasonality that will be investigated further. As expected, many outliers can be seen in the boxplot.
+
+<br>
+
+#### Correlation plots
+Correlation plot for all the pollutants.
+```{r corrp1}
+corrplot(cor(daily_data_pp[complete.cases(daily_data_pp), c("BEN","CO","EBE","NMHC","NO","NO2","O3","PM10","PM2.5","SO2","TCH","TOL")]), method = 'number', tl.col = 'black', order='hclust')
+```
+
+<br>
+
+- The majority of the pollutants show a strong positive correlation between each others.
+
+- SO~2~ and PM~10~ are the pollutants less correlated with the others.
+
+- O~3~ shows in general a strong negative correlation with all the other pollutants.
+
+<br>
+
+Correlation plot for NO~2~, O~3~ and weather paramters.
+```{r coorplot2}
+corrplot(cor(daily_data_pp[complete.cases(daily_data_pp), c("temp_avg", "humidity", "wind_avg_speed", "precipitation", "NO2", "O3")]), method = 'number', tl.col = 'black', order='hclust')
+```
+
+- O~3~ is positively correlated to wind average speed and average temperature and negatively correlated to humidity. There is no correlation to precipitation.
+
+- NO~2~ is negatively correlated to wind average speed and average temperature. There is no correlation to humidity nor precipitation.
+
+- Average temperature and humidity are strongly negatively correlated.
+
+<br>
+
+#### Single variable analysis on NO~2~
+
+Quantiles of O~3~.
+```{r O3}
+O3 <- daily_data_pp$O3[!is.na(daily_data_pp$O3)]
+quantile(O3, seq(0,1,0.1))
+```
+
+<br>
+
+Mean and standard deviation.
+```{r O3mean}
+mean(NO2)
+sd(NO2)
+```
+
+<br>
+
+Scatter plot, density function, histogram and boxplot
+```{r O3plot, results='hide'}
+p0_O3<-qplot(x=1:length(O3),y=O3, geom='point', xlab = paste0("1:", length(O3)))
+p1_O3<-qplot(O3, geom='histogram')
+p2_O3<-qplot(O3, geom='density')
+p3_O3<-qplot(O3, x= 1, geom = "boxplot")
+p_O3<-list(p0_O3,p1_O3, p2_O3, p3_O3)
+marrangeGrob(p_O3, nrow=2, ncol=2)
+```
+
+<br>
+
+Scatter plot
+```{r O3 col}
+plot(O3, pch=19, xlab=''); grid()
+```
+
+#### Bi-variate analysis of NO~2~ vs. O~3~
+
+```{r no2o3p1}
+NO2_O3<-daily_data_pp[ ,.(x=NO2, y=O3)]
+NO2_O3 <- NO2_O3[complete.cases(NO2_O3), ]
+head(NO2_O3)
+```
+
+```{r no2o3p2}
+NO2_O3_p1<-qplot(NO2_O3$x,geom='density')
+NO2_O3_p2<-qplot(NO2_O3$y,geom='density')
+NO2_O3_p4<-ggplot(NO2_O3,aes(x=x,y=y))+geom_point()
+NO2_O3_p<-list(NO2_O3_p1,NO2_O3_p2)
+marrangeGrob(NO2_O3_p, nrow=2, ncol=1)
+```
+
+```{r no2o3p3}
+print(NO2_O3_p4+ggtitle('NO2 vs O3'))
+```
+
+#### Time Series
+
+#### Box Plots
+
+## Regression analysis
+This paragraph will start drawing some conclusion in order to select the ideal explanatory variables for the regression. To do so, it is necessary to integrate the knowledge gained from the exploratory analysis with some additional informations.  
+The cause for the majority of the pollutants considered in this report is combustion of fossil fuels, with the small remaining percentage coming from various other sources (mostly volatile organic compound used as solvents or byproducts of industrial processes).  
+In detail, the pollutants values measured in a city can be considered as deriving from two main sources:
+
+- Cars, responsible for the majority of: BEN, CO, EBE, NMHC, NO, NO~2~, PM~10~, PM~2.5~.
+
+- Industries, responsible for the majority of: SO~2~, TOL.
+
+A separate discussion is reserved for O~3~. Ground-level ozone is created by chemical reaction of nitrogen oxides and volatile organic compounds (VOC) in presence of light.  
+The chemical balance (simplified) is the following:
+
+<br>
+
+*NO~(x)~ + O~2~ <-> NO~(x-1)~ + O~3~ (catalysed by VOC and sunlight)*
+
+<br>
+
+This is an oxidoreduction reaction, and it might provide a valid explanation for the strong negative correlation between NO~2~ and O~3~.  
+On the other hand it would be reasonable to expect as well a negative correlation between NO2 and VOC, as an increasing amount of these volatile compounds moves the balance of the equation to the right, toward NO~(x-1)~ and O~3~, but the correlation matrix for the studied dataset tells us that the correlation between NO2 and the measured VOC (BEN, EBE, NMHC, TOL, THC) is for all of them strongly positive. The suggested explanation for these observations is that sunlight has a much bigger impact than VOC on the balance of the equation, and therefore the strong positive correlation between NO~2~ and VOC is easily explained by the fact that they all come from the same sources. A validation of the hypothesis on the influence of sunlight might be given by the seasonality of O~3~, with the increase in summer possibly due to the increased amount of sunlight hours and the higher atmospheric temperature.  
+To select the explanatory variables for a linear regression describing NO~2~, it might be tempting to choose one or many other pollutants, given the strong correlation between them and the dependent variable. As seen for the VOC though, this correlation might be mostly explained by the common sources for all the pollutants. A typical case where correlation does not imply causation.  
+The other variables from which to choose are all weather related. The model derived using only weather variables is not expected to return a very high R squared, but it will indeed be reliable in understanding the effect of the selected weather conditions on the value of NO~2~. To improve the precision of the model some other variable should be taken into account, such as traffic near the stations and wind direction.  
+By looking at the correlation matrix between NO~2~ and weather parameter, the chosen explanatory variables are wind average and temperature average. Humidity, minimum and maximum temperature are dropped to avoid collinearity due to the high correlation between these variables and temperature average, while precipitation is dropped due to the lack of correlation with NO~2~ in our dataset. In the future it might be interesting to look at the effect of precipitations as well, but in the available dataset the number of observations with precipitation not equal to zero is to little to be significant.
+
+## Conclusions
+
+## Future developments
 
 ```{r trial3, echo=FALSE}
 
@@ -350,7 +513,7 @@ server <- shinyServer(function(input,output) {
 
 ```
 
-```{r trial, echo=FALSE}
+```{r ts2, echo=FALSE}
 
 library(shiny)
 
@@ -391,7 +554,7 @@ server <- shinyServer(function(input,output) {
 
     ts1 <- ts1[complete.cases(ts1), ]
 
-    ts1 <- subset(ts1, , c("ob_date", input$pollutant1,input$pollutant2))
+    ts1 <- subset(ts1, select = c("ob_date", input$pollutant1,input$pollutant2))
 
     dygraph(ts1) %>%
       dyAxis("y") %>%
@@ -407,7 +570,7 @@ server <- shinyServer(function(input,output) {
 
 ```
 
-```{r trial1, echo=FALSE}
+```{r ts1, echo=FALSE}
 
 library(shiny)
 
@@ -447,7 +610,7 @@ server <- shinyServer(function(input,output) {
     ts2 <- daily_data_pp
     ts2 <- ts2[complete.cases(ts2), ]
 
-    ts2 <- subset(ts2, , c("ob_date", input$pollutant,input$weather))
+    ts2 <- subset(ts2, select = c("ob_date", input$pollutant,input$weather))
 
     dygraph(ts2) %>%
       dyAxis("y") %>%
