@@ -575,7 +575,7 @@ The recorded NO~2~ levels as observed from the histogram below, we see that the 
 
 ```{r no2month, echo=FALSE}
 boxplot(daily_data_pp$NO2~month(daily_data_pp$ob_date),
-        main='NO2 by wind_avg_speed'); grid()
+        main='NO2 by months'); grid()
 ```
 
 ##### NO~2~ variation over the years
