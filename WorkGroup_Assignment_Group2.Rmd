@@ -477,6 +477,15 @@ By looking at the correlation matrix between NO~2~ and weather parameter, the ch
 ## Conclusions
 
 ## Future developments
+- deal with missini values and outliers
+
+- traffic
+
+- wind direction
+
+- openair
+
+- forecasting
 
 ```{r trial3, echo=FALSE}
 
