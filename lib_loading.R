@@ -7,6 +7,12 @@ library(ggplot2)
 library(gridExtra)
 library(corrplot)
 library(plotly)
+library(shiny)
+library(dplyr) # easier data wrangling 
+library(viridis) # colour blind friendly palette, works in B&W also
+library(lubridate) # for easy date manipulation
+library(ggExtra) # because remembering ggplot theme options is beyond me
+
 #library(openair)
 #library(dygraphs)
 
