@@ -43,7 +43,7 @@ The analysis is based in two main datasets, one containing information about tha
 Pollutants observations are stored in `.csv` files, one per each month. Informations on year and month are contained in the file name but not in the dataset. The function automatically import all the files, attaches month and year columns and merge them together in the initial `raw_data` dataset.
 
 ```{r raw_data, results=FALSE}
-years <- c(11:12); months <- c(1:12)
+years <- c(11:16); months <- c(1:12)
 filenameprefix <- "hourly_data"
 raw_data <- data.table(year=integer(), month=integer(), day=character(), hour=integer(),station=integer(), parameter=integer(), value=numeric())
 
