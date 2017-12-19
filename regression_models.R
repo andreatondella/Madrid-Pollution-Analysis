@@ -73,7 +73,6 @@ summer_restdays <- daily_data_pp[(month(ob_date) %in% summer_months) & (workday 
 winter_workdays <- daily_data_pp[!(month(ob_date) %in% summer_months) & (workday == T) & !is.na(NO2)]
 winter_restdays <- daily_data_pp[!(month(ob_date) %in% summer_months) & (workday == F) & !is.na(NO2)]
 
-
 list_of_data_tables <- list(summer_workdays, summer_restdays, winter_workdays, winter_restdays)
 length(list_of_data_tables)
 check_weather_model(list_of_data_tables)
