@@ -559,6 +559,34 @@ The time series plotted above are useful in gaing an initial understanding of th
 
 #### Box Plots
 
+##### NO~2~ variation with day of week
+
+The recorded NO~2~ levels as observed from the histogram below, we see that the concentration of
+NO~2~ measured during weekends is different from that measured during weekdays. It is lower during the weekends. This suggests weekly repetitive pattern.
+
+```{r no2weekday, echo=FALSE}
+boxplot(daily_data_pp$NO2~daily_data_pp$week_day,
+        main='NO2 by weekday'); grid()
+```
+
+##### NO~2~ variation by month
+
+The recorded NO~2~ levels as observed from the histogram below, we see that the concentration of NO~2~ measured during summer months is lesser than the NO~2~ levels measured during winter months. We could infer many things from this but it is also important to realise that the measurement is weight per volume. Since NO~2~ is a gas, at higher temperatures, there will be less weight of NO~2~ per volume. Hence, the histogram does highlight some differences but if we account for the measurement technique, these values may not be much different. Nonetheless, it is interesting to take a look at the variation through the year.
+
+```{r no2month, echo=FALSE}
+boxplot(daily_data_pp$NO2~month(daily_data_pp$ob_date),
+        main='NO2 by wind_avg_speed'); grid()
+```
+
+##### NO~2~ variation over the years
+
+The recorded NO~2~ levels as observed from the histogram below, we see that the concentration of NO~2~ measured has varied over the years but the variation has not been much.
+
+```{r no2year, echo=FALSE}
+boxplot(daily_data_pp$NO2~year(daily_data_pp$ob_date),
+        main='NO2 by wind_avg_speed'); grid()
+```
+
 ## Regression analysis
 This paragraph will start drawing some conclusion in order to select the ideal explanatory variables for the regression. To do so, it is necessary to integrate the knowledge gained from the exploratory analysis with some additional informations.  
 The cause for the majority of the pollutants considered in this report is combustion of fossil fuels, with the small remaining percentage coming from various other sources (mostly volatile organic compound used as solvents or byproducts of industrial processes).  

@@ -150,6 +150,12 @@ boxplot(daily_data_pp$NO2~daily_data_pp$temp_avg,
 boxplot(daily_data_pp$NO2~daily_data_pp$precipitation,
         main='NO2 by wind_avg_speed'); grid()
 
+boxplot(daily_data_pp$NO2~month(daily_data_pp$ob_date),
+        main='NO2 by wind_avg_speed'); grid()
+
+boxplot(daily_data_pp$NO2~year(daily_data_pp$ob_date),
+        main='NO2 by wind_avg_speed'); grid()
+
 plot(daily_data_pp$precipitation, daily_data_pp$NO2)
 hist(daily_data_pp$precipitation)
 length(daily_data_pp[!is.na(precipitation)])
