@@ -43,7 +43,7 @@ The analysis is based in two main datasets, one containing information about tha
 Pollutants observations are stored in `.csv` files, one per each month. Informations on year and month are contained in the file name but not in the dataset. The function automatically import all the files, attaches month and year columns and merge them together in the initial `raw_data` dataset.
 
 ```{r raw_data, results=FALSE}
-years <- c(11:16); months <- c(1:12)
+years <- c(11:12); months <- c(1:12)
 filenameprefix <- "hourly_data"
 raw_data <- data.table(year=integer(), month=integer(), day=character(), hour=integer(),station=integer(), parameter=integer(), value=numeric())
 
@@ -354,7 +354,7 @@ corrplot(cor(daily_data_pp[complete.cases(daily_data_pp), c("temp_avg", "humidit
 
 <br>
 
-#### Single variable analysis on NO~2~
+#### Single variable analysis on O~3~
 
 Quantiles of O~3~.
 ```{r O3}
@@ -366,8 +366,8 @@ quantile(O3, seq(0,1,0.1))
 
 Mean and standard deviation.
 ```{r O3mean}
-mean(NO2)
-sd(NO2)
+mean(O3)
+sd(O3)
 ```
 
 <br>
@@ -384,12 +384,11 @@ marrangeGrob(p_O3, nrow=2, ncol=2)
 
 <br>
 
-<<<<<<< HEAD
 Scatter plot
 ```{r O3 col}
 plot(O3, pch=19, xlab=''); grid()
 ```
-=======
+
   output$heatmap = renderPlot({
       df <- subset(h_data, year == input$year & station_Name == input$station & param_Form == input$pollutant, c("day", "month", "year", "hour", "value"))
     library(ggplot2)
@@ -399,17 +398,17 @@ plot(O3, pch=19, xlab=''); grid()
     library(lubridate) # for easy date manipulation
     library(ggExtra) # because remembering ggplot theme options is beyond me
     library(tidyr)
->>>>>>> 81514358197d9b91a126577e5292be47fe675972
+
 
 #### Bi-variate analysis of NO~2~ vs. O~3~
 
-<<<<<<< HEAD
+
 ```{r no2o3p1}
 NO2_O3<-daily_data_pp[ ,.(x=NO2, y=O3)]
 NO2_O3 <- NO2_O3[complete.cases(NO2_O3), ]
 head(NO2_O3)
 ```
-=======
+
     df$day <- as.numeric(df$day)
     df$hour <- as.numeric(df$hour)
     df$month <- as.numeric(df$month)
@@ -432,18 +431,18 @@ head(NO2_O3)
            theme(legend.title=element_text(size=8))+
            theme(legend.text=element_text(size=6))+
            removeGrid())
->>>>>>> 81514358197d9b91a126577e5292be47fe675972
+
 
 ```{r no2o3p2}
 NO2_O3_p1<-qplot(NO2_O3$x,geom='density')
 NO2_O3_p2<-qplot(NO2_O3$y,geom='density')
-NO2_O3_p4<-ggplot(NO2_O3,aes(x=x,y=y))+geom_point()
+NO2_O3_p3<-ggplot(NO2_O3,aes(x=x,y=y))+geom_point()
 NO2_O3_p<-list(NO2_O3_p1,NO2_O3_p2)
 marrangeGrob(NO2_O3_p, nrow=2, ncol=1)
 ```
 
 ```{r no2o3p3}
-print(NO2_O3_p4+ggtitle('NO2 vs O3'))
+print(NO2_O3_p3+ggtitle('NO2 vs O3'))
 ```
 
 #### Time Series
