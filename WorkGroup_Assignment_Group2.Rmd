@@ -587,6 +587,24 @@ boxplot(daily_data_pp$NO2~year(daily_data_pp$ob_date),
         main='NO2 by wind_avg_speed'); grid()
 ```
 
+##### NO~2~ variation on workday or restday
+
+The recorded NO~2~ levels for a work day are higher than the ones recorded on a restday. This is as expected as there will be more human acitivity within city or within the vicinity of the weather stations in Madrid during a workday than during a restday. There might be more activity outside the city but that won't be recorded in that subset of data we have on Madrid pollution.
+
+```{r no2workday, echo=FALSE}
+boxplot(daily_data_pp$NO2~daily_data_pp$workday,
+        main='NO2 by workday'); grid()
+```
+
+##### NO~2~ variation on workdays per month
+
+For summer months as well as winter months, the pollution caused by NO~2~ as recorded and seen in the histogram below is higher for workdays. So we can conclude that within the yearly variation, NO~2~ concetrations on workday as well as restday follow the yearly trend.
+
+```{r no2workdaypermonth, echo=FALSE}
+boxplot(daily_data_pp$NO2~daily_data_pp$workday+month(daily_data_pp$ob_date),
+        main='NO2 by workday and month'); grid()
+```
+
 ## Regression analysis
 This paragraph will start drawing some conclusion in order to select the ideal explanatory variables for the regression. To do so, it is necessary to integrate the knowledge gained from the exploratory analysis with some additional informations.  
 The cause for the majority of the pollutants considered in this report is combustion of fossil fuels, with the small remaining percentage coming from various other sources (mostly volatile organic compound used as solvents or byproducts of industrial processes).  
