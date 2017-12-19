@@ -321,7 +321,7 @@ abline(150,0,col="darkorange2")
 points(rep(0,length(NO2)),col='white')
 ```
 
-The distribution of NO~2~ is slightly skewed to the right. The scatter plot shows some possible signs of seasonality that will be investigated further. As expected, many outliers can be seen in the boxplot.
+The distribution of NO~2~ is skewed to the right. The scatter plot shows some possible signs of seasonality that will be investigated further. As expected, many outliers can be seen in the boxplot.
 
 <br>
 
@@ -389,63 +389,173 @@ Scatter plot
 plot(O3, pch=19, xlab=''); grid()
 ```
 
-  output$heatmap = renderPlot({
-      df <- subset(h_data, year == input$year & station_Name == input$station & param_Form == input$pollutant, c("day", "month", "year", "hour", "value"))
-    library(ggplot2)
-    library(dplyr) # easier data wrangling
-    library(viridis) # colour blind friendly palette, works in B&W also
-    #library(Interpol.T) #  will generate a large dataset on initial load
-    library(lubridate) # for easy date manipulation
-    library(ggExtra) # because remembering ggplot theme options is beyond me
-    library(tidyr)
+The distribution of O~3~ is slightly skewed to the right and has an overall odd shape with two major peaks at roughly 10 and 55 microg/m^3^ respectively. As for NO~2~, the scatter plot shows some possible signs of seasonality that will be investigated further. Given the shape of the distribution, not many outliers are present, as shown by the boxplot.
 
+<br>
 
 #### Bi-variate analysis of NO~2~ vs. O~3~
 
-
+Merging NO~2~ and O~3~ vectors.
 ```{r no2o3p1}
 NO2_O3<-daily_data_pp[ ,.(x=NO2, y=O3)]
 NO2_O3 <- NO2_O3[complete.cases(NO2_O3), ]
 head(NO2_O3)
 ```
 
-    df$day <- as.numeric(df$day)
-    df$hour <- as.numeric(df$hour)
-    df$month <- as.numeric(df$month)
-    df$year <- as.numeric(df$year)
-    df$value <- as.numeric(df$value)
-    plot(ggplot(df,aes(day,hour,fill=as.numeric(value))) + geom_tile(color= "white",size=0.1)
-         + scale_fill_viridis(name="Hourly Value (microg/m^3)  ",option ="C")
-         + facet_grid(year~month)
-         + scale_y_continuous(trans = "reverse", breaks = unique(df$hour))
-         + scale_x_continuous(breaks =c(1,10,20,31))
-         + theme_minimal(base_size = 8)
-         + labs(title= paste("Hourly Pollution values - Station", input$station), x="Day", y="Hour")
-         + theme(legend.position = "bottom")+
-           theme(plot.title=element_text(size = 14))+
-           theme(axis.text.y=element_text(size=6)) +
-           theme(strip.background = element_rect(colour="white"))+
-           theme(plot.title=element_text(hjust=0))+
-           theme(axis.ticks=element_blank())+
-           theme(axis.text=element_text(size=7))+
-           theme(legend.title=element_text(size=8))+
-           theme(legend.text=element_text(size=6))+
-           removeGrid())
+<br>
 
-
+Preparing density functions and scatter plots.
 ```{r no2o3p2}
 NO2_O3_p1<-qplot(NO2_O3$x,geom='density')
 NO2_O3_p2<-qplot(NO2_O3$y,geom='density')
 NO2_O3_p3<-ggplot(NO2_O3,aes(x=x,y=y))+geom_point()
 NO2_O3_p<-list(NO2_O3_p1,NO2_O3_p2)
+```
+
+<br>
+
+Plotting density functions.
+```{r density no2o3}
 marrangeGrob(NO2_O3_p, nrow=2, ncol=1)
 ```
 
+<br>
+
+Plotting scatter plot of NO~2~ vs. 0~3~
 ```{r no2o3p3}
-print(NO2_O3_p3+ggtitle('NO2 vs O3'))
+print(NO2_O3_p3+ggtitle('NO2 vs. O3'))
 ```
 
+<br>
+
+The two density functions have been described separately in previous steps. The two pollutants have similar distributions, with standard deviation equal to `r round(sd(NO2),2)` for NO~2~ and to `r round(sd(O3),2)` for O~3~. As already shown by the correlation plot, the two pollutants are strongly negatively correlated, with R^2^ equal to -0,65.
+
+<br>
+
 #### Time Series
+Time series plots are displayed to review once again the correlation between two different pollutants, between a pollutant and a weather parameter and moreover to understand the seasonality effect on the value of the parameters.
+
+#### Time series for two pollutants
+```{r ts2, echo=FALSE}
+
+library(shiny)
+
+shinyApp(
+
+options=list(width="100%", height=900),
+
+ui <- shinyUI(fluidPage(
+  titlePanel(""),
+
+  fluidRow(
+    column(width = 3,
+           helpText("Select the first pollutant"),
+           selectInput("pollutant1", label = "Pollutant",
+                       choices = parameters$param_Form, selected = "NO2")
+    ),
+
+    column(width = 3,
+           helpText("Select the second pollutant"),
+           selectInput("pollutant2", label = "Pollutant",
+                       choices = parameters$param_Form, selected = "O3")
+    )
+
+  ),
+
+  dygraphOutput("timeseries", width = "100%", height = 700)
+)
+),
+
+server <- shinyServer(function(input,output) {
+  output$timeseries = renderDygraph({
+
+    library(dygraphs)
+    library(tidyverse)
+    library(lubridate)
+
+    ts1 <- daily_data_pp
+
+    ts1 <- ts1[complete.cases(ts1), ]
+
+    ts1 <- subset(ts1, select = c("ob_date", input$pollutant1,input$pollutant2))
+
+    dygraph(ts1) %>%
+      dyAxis("y") %>%
+      dyAxis('y2') %>%
+      dySeries(input$pollutant1, axis = "y", label = input$pollutant1)  %>%
+      dySeries(input$pollutant2, axis = "y2", label = input$pollutant2)  %>%
+      dyOptions(stackedGraph = TRUE) %>%
+      dyRangeSelector()
+
+  })
+})
+)
+
+```
+
+<br>
+
+#### Time series for a pollutant and a weather parameter
+```{r ts1, echo=FALSE}
+
+library(shiny)
+
+shinyApp(
+
+options=list(width="100%", height=900),
+
+ui <- shinyUI(fluidPage(
+  titlePanel(" "),
+
+  fluidRow(
+    column(width = 3,
+           helpText("Select a pollutant"),
+           selectInput("pollutant", label = "Pollutant",
+                       choices = parameters$param_Form, selected = "NO2")
+    ),
+
+    column(width = 3,
+           helpText("Select a weather parameter"),
+           selectInput("weather", label = "Weather",
+                       choices = colnames(weather), selected = "wind_avg_speed")
+    )
+
+  ),
+
+  dygraphOutput("timeseries2", width = "100%", height = 700)
+)
+),
+
+server <- shinyServer(function(input,output) {
+  output$timeseries2 = renderDygraph({
+
+    library(dygraphs)
+    library(tidyverse)
+    library(lubridate)
+
+    ts2 <- daily_data_pp
+    ts2 <- ts2[complete.cases(ts2), ]
+
+    ts2 <- subset(ts2, select = c("ob_date", input$pollutant,input$weather))
+
+    dygraph(ts2) %>%
+      dyAxis("y") %>%
+      dyAxis('y2') %>%
+      dySeries(input$pollutant, axis = "y", label = input$pollutant)  %>%
+      dySeries(input$weather, axis = "y2", label = input$weather)  %>%
+      dyOptions(stackedGraph = TRUE) %>%
+      dyRangeSelector()
+
+  })
+})
+)
+```
+
+<br>
+
+The time series plotted above are useful in gaing an initial understanding of the seasonality effect on the pollutants. The data though are too noisy to draw meaningful conclusions. In the next section, boxplots are used in trying to capture the dependency of NO~2~ on seasons, days of the week and workingdays.
+
+<br>
 
 #### Box Plots
 
@@ -476,32 +586,53 @@ By looking at the correlation matrix between NO~2~ and weather parameter, the ch
 ## Conclusions
 
 ## Future developments
-- deal with missini values and outliers
+Ideas on how to improve the quality of the analysis and possible future directions are here presented.
 
-- traffic
+<br>
 
-- wind direction
+#### Improvements
 
-- openair
+- Dealing with outliers.
 
-- forecasting
+- Dealing with missing values.
 
+- Exploit the functions provided by `openair` package.
+
+#### Future directions
+
+- Incorporate data about traffic near the measurement stations.
+
+- Incorporate data about wind direction near the mesurement stations to allow for the identification of the main sources of pollution for the specific location.
+
+- Deepen the time series analysis in order to allow forecasting the value of the pollutants.
+
+- Analyse how different locations affect the coefficient of the explanatory variables.
+
+<br>
+
+#### Map of the pollutants
+
+To provide an initial idea on how the location might affect the value of a specific pollutant, a map displaying the daily average as measured by the 24 stations is presented here.
+
+<br>
+
+The map renders properly but with an exagerated zoom. Please zoom out using the `-` button on the top left corner to have a view of the whole city.
 ```{r trial3, echo=FALSE}
 
 library(shiny)
 
 shinyApp(
 
-options=list(width="100%", height=1000),
+options=list(width="100%", height=800),
 
 ui <- shinyUI(fluidPage(
-  titlePanel("Pollution map"),
+  titlePanel(" "),
 
   fluidRow(
     column(width = 3,
            helpText("Select a pollutant"),
            selectInput("pollutant", label = "Pollutant",
-                       choices = parameters$param_Form, selected = 1)
+                       choices = parameters$param_Form, selected = "NO2")
     ),
 
     column(width = 3,
@@ -559,115 +690,7 @@ server <- shinyServer(function(input,output) {
 
 ```
 
-```{r ts2, echo=FALSE}
 
-library(shiny)
 
-shinyApp(
 
-options=list(width="100%", height=1000),
-
-ui <- shinyUI(fluidPage(
-  titlePanel("Time series"),
-
-  fluidRow(
-    column(width = 3,
-           helpText("Select a pollutant"),
-           selectInput("pollutant1", label = "Pollutant",
-                       choices = parameters$param_Form, selected = 1)
-    ),
-
-    column(width = 3,
-           helpText("Select a pollutant"),
-           selectInput("pollutant2", label = "Pollutant",
-                       choices = parameters$param_Form, selected = 1)
-    )
-
-  ),
-
-  dygraphOutput("timeseries", width = "100%", height = 700)
-)
-),
-
-server <- shinyServer(function(input,output) {
-  output$timeseries = renderDygraph({
-
-    library(dygraphs)
-    library(tidyverse)
-    library(lubridate)
-
-    ts1 <- daily_data_pp
-
-    ts1 <- ts1[complete.cases(ts1), ]
-
-    ts1 <- subset(ts1, select = c("ob_date", input$pollutant1,input$pollutant2))
-
-    dygraph(ts1) %>%
-      dyAxis("y") %>%
-      dyAxis('y2') %>%
-      dySeries(input$pollutant1, axis = "y", label = input$pollutant1)  %>%
-      dySeries(input$pollutant2, axis = "y2", label = input$pollutant2)  %>%
-      dyOptions(stackedGraph = TRUE) %>%
-      dyRangeSelector()
-
-  })
-})
-)
-
-```
-
-```{r ts1, echo=FALSE}
-
-library(shiny)
-
-shinyApp(
-
-options=list(width="100%", height=1000),
-
-ui <- shinyUI(fluidPage(
-  titlePanel("Time series"),
-
-  fluidRow(
-    column(width = 3,
-           helpText("Select a pollutant"),
-           selectInput("pollutant", label = "Pollutant",
-                       choices = parameters$param_Form, selected = 1)
-    ),
-
-    column(width = 3,
-           helpText("Select a pollutant"),
-           selectInput("weather", label = "Weather",
-                       choices = colnames(weather), selected = "wind_avg_speed")
-    )
-
-  ),
-
-  dygraphOutput("timeseries2", width = "100%", height = 700)
-)
-),
-
-server <- shinyServer(function(input,output) {
-  output$timeseries2 = renderDygraph({
-
-    library(dygraphs)
-    library(tidyverse)
-    library(lubridate)
-
-    ts2 <- daily_data_pp
-    ts2 <- ts2[complete.cases(ts2), ]
-
-    ts2 <- subset(ts2, select = c("ob_date", input$pollutant,input$weather))
-
-    dygraph(ts2) %>%
-      dyAxis("y") %>%
-      dyAxis('y2') %>%
-      dySeries(input$pollutant, axis = "y", label = input$pollutant)  %>%
-      dySeries(input$weather, axis = "y2", label = input$weather)  %>%
-      dyOptions(stackedGraph = TRUE) %>%
-      dyRangeSelector()
-
-  })
-})
-)
-```
 
