@@ -43,7 +43,7 @@ The analysis is based in two main datasets, one containing information about tha
 Pollutants observations are stored in `.csv` files, one per each month. Informations on year and month are contained in the file name but not in the dataset. The function automatically import all the files, attaches month and year columns and merge them together in the initial `raw_data` dataset.
 
 ```{r raw_data, results=FALSE}
-years <- c(11:12); months <- c(1:12)
+years <- c(11:16); months <- c(1:12)
 filenameprefix <- "hourly_data"
 raw_data <- data.table(year=integer(), month=integer(), day=character(), hour=integer(),station=integer(), parameter=integer(), value=numeric())
 
@@ -299,7 +299,7 @@ sd(NO2)
 
 <br>
 
-Scatter plot, density function, histogram and boxplot
+Scatter plot, density function, histogram and boxplot.
 ```{r NO2plot, results='hide'}
 p0_NO2<-qplot(x=1:length(NO2),y=NO2, geom='point', xlab = paste0("1:", length(NO2)))
 p1_NO2<-qplot(NO2, geom='histogram')
@@ -312,7 +312,7 @@ marrangeGrob(p_NO2, nrow=2, ncol=2)
 
 <br>
 
-Scatter plot
+Scatter plot.
 ```{r NO2 col}
 plot(NO2, pch=19, xlab=''); grid()
 abline(50,0,col="chartreuse4")
@@ -372,7 +372,7 @@ sd(O3)
 
 <br>
 
-Scatter plot, density function, histogram and boxplot
+Scatter plot, density function, histogram and boxplot.
 ```{r O3plot, results='hide'}
 p0_O3<-qplot(x=1:length(O3),y=O3, geom='point', xlab = paste0("1:", length(O3)))
 p1_O3<-qplot(O3, geom='histogram')
@@ -384,7 +384,7 @@ marrangeGrob(p_O3, nrow=2, ncol=2)
 
 <br>
 
-Scatter plot
+Scatter plot.
 ```{r O3 col}
 plot(O3, pch=19, xlab=''); grid()
 ```
@@ -421,7 +421,7 @@ marrangeGrob(NO2_O3_p, nrow=2, ncol=1)
 
 <br>
 
-Plotting scatter plot of NO~2~ vs. 0~3~
+Plotting scatter plot of NO~2~ vs. 0~3~.
 ```{r no2o3p3}
 print(NO2_O3_p3+ggtitle('NO2 vs. O3'))
 ```
