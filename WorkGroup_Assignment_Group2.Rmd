@@ -629,10 +629,15 @@ To select the explanatory variables for a linear regression describing NO~2~, it
 The other variables from which to choose are all weather related. The model derived using only weather variables is not expected to return a very high R squared, but it will indeed be reliable in understanding the effect of the selected weather conditions on the value of NO~2~. To improve the precision of the model some other variable should be taken into account, such as traffic near the stations and wind direction.  
 By looking at the correlation matrix between NO~2~ and weather parameter, the chosen explanatory variables are wind average and temperature average. Humidity, minimum and maximum temperature are dropped to avoid collinearity due to the high correlation between these variables and temperature average, while precipitation is dropped due to the lack of correlation with NO~2~ in our dataset. In the future it might be interesting to look at the effect of precipitations as well, but in the available dataset the number of observations with precipitation not equal to zero is to little to be significant.
 
-### Regression with all variables 
+### Regression with all variables
+
+At first we build a regression model with all variables available in the data tables in order to understand the impact each one has on the level of NO~2~ recorded.
 
 ```{r no2regressall, echo=TRUE}
 rmodel <- lm(NO2~., data=daily_data_pp)
+```
+
+``````{r no2regressallconfint, echo=TRUE}
 summary(rmodel)
 confint(rmodel,parm = 'temp_avg', level = 0.95)
 confint(rmodel,parm = 'temp_max', level = 0.95)
@@ -650,7 +655,9 @@ confint(rmodel,parm = 'PM2.5', level = 0.95)
 confint(rmodel,parm = 'SO2', level = 0.95)
 confint(rmodel,parm = 'TCH', level = 0.95)
 confint(rmodel,parm = 'TOL', level = 0.95)
+```
 
+``````{r no2regressallplots, echo=TRUE}
 summary(rmodel$residuals)
 plot(rmodel$residuals)
 hist(rmodel$residuals)
