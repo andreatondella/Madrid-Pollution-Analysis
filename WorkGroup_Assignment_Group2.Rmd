@@ -733,7 +733,10 @@ check_weather_model(list(winter_workdays))
 ```{r no2regressionwinterrestdayresults, echo=TRUE}
 check_weather_model(list(winter_restdays))
 ```
+
 ## Conclusions
+
+We find from the regression that the R-squared for winter days hovers at 0.39 and for summer days at 0.13. The correlation plots seen earlier suggest multiple variable which are correlated with each other and also with NO~2~. Mostly these are from two major sources of pollution. Thus, the current regression model focusses on studying the impact of weather conditions on the measure NO~2~ concentration. The low R-square value is acceptable as we are not considering all factors which affect the measure NO~2~ levels. Furthermore, the value for summer days is much lesser suggesting that this model is better at predicting values during winter days than during summer days. Further data related to pollution, human behaviour, and other weather parameters should prove helpful in increasing the prediction results of similar models.
 
 ## Future developments
 Ideas on how to improve the quality of the analysis and possible future directions are here presented.
