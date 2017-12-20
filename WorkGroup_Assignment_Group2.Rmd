@@ -575,7 +575,7 @@ The recorded NO~2~ levels as observed from the histogram below, we see that the 
 
 ```{r no2month, echo=FALSE}
 boxplot(daily_data_pp$NO2~month(daily_data_pp$ob_date),
-        main='NO2 by wind_avg_speed'); grid()
+        main='NO2 by month'); grid()
 ```
 
 ##### NO~2~ variation over the years
@@ -584,7 +584,7 @@ The recorded NO~2~ levels as observed from the histogram below, we see that the 
 
 ```{r no2year, echo=FALSE}
 boxplot(daily_data_pp$NO2~year(daily_data_pp$ob_date),
-        main='NO2 by wind_avg_speed'); grid()
+        main='NO2 by years'); grid()
 ```
 
 ##### NO~2~ variation on workday or restday
@@ -628,6 +628,61 @@ On the other hand it would be reasonable to expect as well a negative correlatio
 To select the explanatory variables for a linear regression describing NO~2~, it might be tempting to choose one or many other pollutants, given the strong correlation between them and the dependent variable. As seen for the VOC though, this correlation might be mostly explained by the common sources for all the pollutants. A typical case where correlation does not imply causation.  
 The other variables from which to choose are all weather related. The model derived using only weather variables is not expected to return a very high R squared, but it will indeed be reliable in understanding the effect of the selected weather conditions on the value of NO~2~. To improve the precision of the model some other variable should be taken into account, such as traffic near the stations and wind direction.  
 By looking at the correlation matrix between NO~2~ and weather parameter, the chosen explanatory variables are wind average and temperature average. Humidity, minimum and maximum temperature are dropped to avoid collinearity due to the high correlation between these variables and temperature average, while precipitation is dropped due to the lack of correlation with NO~2~ in our dataset. In the future it might be interesting to look at the effect of precipitations as well, but in the available dataset the number of observations with precipitation not equal to zero is to little to be significant.
+
+### Regression with all variables 
+
+```{r no2regressall, echo=TRUE}
+rmodel <- lm(NO2~., data=daily_data_pp)
+summary(rmodel)
+confint(rmodel,parm = 'temp_avg', level = 0.95)
+confint(rmodel,parm = 'temp_max', level = 0.95)
+confint(rmodel,parm = 'temp_min', level = 0.95)
+confint(rmodel,parm = 'precipitation', level = 0.95)
+confint(rmodel,parm = 'humidity', level = 0.95)
+confint(rmodel,parm = 'wind_avg_speed', level = 0.95)
+confint(rmodel,parm = 'week_dayMonday', level = 0.95)
+confint(rmodel,parm = 'week_daySaturday', level = 0.95)
+confint(rmodel,parm = 'restdayTRUE', level = 0.95)
+confint(rmodel,parm = 'CO', level = 0.95)
+confint(rmodel,parm = 'NO', level = 0.95)
+confint(rmodel,parm = 'O3', level = 0.95)
+confint(rmodel,parm = 'PM2.5', level = 0.95)
+confint(rmodel,parm = 'SO2', level = 0.95)
+confint(rmodel,parm = 'TCH', level = 0.95)
+confint(rmodel,parm = 'TOL', level = 0.95)
+
+summary(rmodel$residuals)
+plot(rmodel$residuals)
+hist(rmodel$residuals)
+qqnorm(rmodel$residuals); grid()
+boxplot(rmodel$residuals,main='boxplot'); grid()
+```
+
+### Regression only with weather parameters
+
+#### These regression models are built with data filtered on summer/winter months and workday/restday
+
+```{r no2regressionfunction, echo=TRUE}
+check_weather_model <- function(data_table_list) {
+  par(mfrow=c(length(data_table_list),4))
+  lapply(data_table_list, function(x) {
+    linear_model <- lm(NO2~temp_avg + wind_avg_speed, data = x)
+    print(summary(linear_model))
+    print(confint(linear_model, 'temp_avg', level = 0.95))
+    print(confint(linear_model, 'wind_avg_speed', level = 0.95))
+    print(confint(linear_model, 'precipitation', level = 0.95))
+    
+    print(paste('MAD = ', mean(abs(linear_model$residuals)), sep = ''))
+    print('Residuals summary')
+    print(summary(linear_model$residuals))
+    
+    plot(linear_model$residuals)
+    hist(linear_model$residuals)
+    qqnorm(linear_model$residuals); grid()
+    boxplot(linear_model$residuals,main='boxplot'); grid()
+  })
+}
+```
 
 ## Conclusions
 
