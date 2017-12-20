@@ -631,11 +631,13 @@ By looking at the correlation matrix between NO~2~ and weather parameter, the ch
 
 ### Regression with all variables
 
-At first we build a regression model with all variables available in the data tables in order to understand the impact each one has on the level of NO~2~ recorded.
+At first we build a regression model with all variables available in the data tables in order to understand the impact each one has on the level of NO~2~ recorded. The model is as below.
 
 ```{r no2regressall, echo=TRUE}
 rmodel <- lm(NO2~., data=daily_data_pp)
 ```
+
+The 95% confidence intervals for coefficients of all the variables are:
 
 ``````{r no2regressallconfint, echo=TRUE}
 summary(rmodel)
@@ -657,6 +659,8 @@ confint(rmodel,parm = 'TCH', level = 0.95)
 confint(rmodel,parm = 'TOL', level = 0.95)
 ```
 
+The residuals are:
+
 ``````{r no2regressallplots, echo=TRUE}
 summary(rmodel$residuals)
 plot(rmodel$residuals)
@@ -666,6 +670,8 @@ boxplot(rmodel$residuals,main='boxplot'); grid()
 ```
 
 ### Regression only with weather parameters
+
+Next we build a regression model and a function wrapper over it as it will be called several times with same variables. This model considers only the average temperature for each day and the wind speed. The minimum temperature is not included as we find from the previous regression that the value for coefficient is statistically inconclusive. In that case, we can use just one of maximum temperature or average temperature. We proceed with average temperature as it will have a similar effect as maximum temperature but will avoid certain outliers. Further, we do not consider precipitation as from the correletation plots shown before show little or no correlation either with predictor variables or with the target variable.
 
 #### These regression models are built with data filtered on summer/winter months and workday/restday
 
@@ -689,6 +695,20 @@ check_weather_model <- function(data_table_list) {
     boxplot(linear_model$residuals,main='boxplot'); grid()
   })
 }
+```
+
+#### Summary and plots from the regression model with weather variables
+
+```{r no2regressionweatherresults, echo=TRUE}
+summer_months <- c(4:9)
+summer_workdays <- daily_data_pp[(month(ob_date) %in% summer_months) & (workday == T) & !is.na(NO2)]
+summer_restdays <- daily_data_pp[(month(ob_date) %in% summer_months) & (workday == F) & !is.na(NO2)]
+winter_workdays <- daily_data_pp[!(month(ob_date) %in% summer_months) & (workday == T) & !is.na(NO2)]
+winter_restdays <- daily_data_pp[!(month(ob_date) %in% summer_months) & (workday == F) & !is.na(NO2)]
+
+list_of_data_tables <- list(summer_workdays, summer_restdays, winter_workdays, winter_restdays)
+length(list_of_data_tables)
+check_weather_model(list_of_data_tables)
 ```
 
 ## Conclusions
