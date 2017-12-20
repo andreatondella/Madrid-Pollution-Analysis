@@ -435,6 +435,8 @@ The two density functions have been described separately in previous steps. The 
 #### Time Series
 Time series plots are displayed to review once again the correlation between two different pollutants, between a pollutant and a weather parameter and moreover to understand the seasonality effect on the value of the parameters.
 
+<br>
+
 #### Time series for two pollutants
 ```{r ts2, echo=FALSE}
 
@@ -559,6 +561,8 @@ The time series plotted above are useful in gaing an initial understanding of th
 
 #### Box Plots
 
+<br>
+
 ##### NO~2~ variation with day of week
 
 The recorded NO~2~ levels as observed from the histogram below, we see that the concentration of
@@ -569,6 +573,8 @@ boxplot(daily_data_pp$NO2~daily_data_pp$week_day,
         main='NO2 by weekday'); grid()
 ```
 
+<br>
+
 ##### NO~2~ variation by month
 
 The recorded NO~2~ levels as observed from the histogram below, we see that the concentration of NO~2~ measured during summer months is lesser than the NO~2~ levels measured during winter months. We could infer many things from this but it is also important to realise that the measurement is weight per volume. Since NO~2~ is a gas, at higher temperatures, there will be less weight of NO~2~ per volume. Hence, the histogram does highlight some differences but if we account for the measurement technique, these values may not be much different. Nonetheless, it is interesting to take a look at the variation through the year.
@@ -577,6 +583,8 @@ The recorded NO~2~ levels as observed from the histogram below, we see that the 
 boxplot(daily_data_pp$NO2~month(daily_data_pp$ob_date),
         main='NO2 by month'); grid()
 ```
+
+<br>
 
 ##### NO~2~ variation over the years
 
@@ -587,6 +595,8 @@ boxplot(daily_data_pp$NO2~year(daily_data_pp$ob_date),
         main='NO2 by years'); grid()
 ```
 
+<br>
+
 ##### NO~2~ variation on workday or restday
 
 The recorded NO~2~ levels for a work day are higher than the ones recorded on a restday. This is as expected as there will be more human acitivity within city or within the vicinity of the weather stations in Madrid during a workday than during a restday. There might be more activity outside the city but that won't be recorded in that subset of data we have on Madrid pollution.
@@ -596,6 +606,8 @@ boxplot(daily_data_pp$NO2~daily_data_pp$workday,
         main='NO2 by workday'); grid()
 ```
 
+<br>
+
 ##### NO~2~ variation on workdays per month
 
 For summer months as well as winter months, the pollution caused by NO~2~ as recorded and seen in the histogram below is higher for workdays. So we can conclude that within the yearly variation, NO~2~ concetrations on workday as well as restday follow the yearly trend.
@@ -604,6 +616,8 @@ For summer months as well as winter months, the pollution caused by NO~2~ as rec
 boxplot(daily_data_pp$NO2~daily_data_pp$workday+month(daily_data_pp$ob_date),
         main='NO2 by workday and month'); grid()
 ```
+
+***
 
 ## Regression analysis
 This paragraph will start drawing some conclusion in order to select the ideal explanatory variables for the regression. To do so, it is necessary to integrate the knowledge gained from the exploratory analysis with some additional informations.  
@@ -629,6 +643,8 @@ To select the explanatory variables for a linear regression describing NO~2~, it
 The other variables from which to choose are all weather related. The model derived using only weather variables is not expected to return a very high R squared, but it will indeed be reliable in understanding the effect of the selected weather conditions on the value of NO~2~. To improve the precision of the model some other variable should be taken into account, such as traffic near the stations and wind direction.  
 By looking at the correlation matrix between NO~2~ and weather parameter, the chosen explanatory variables are wind average and temperature average. Humidity, minimum and maximum temperature are dropped to avoid collinearity due to the high correlation between these variables and temperature average, while precipitation is dropped due to the lack of correlation with NO~2~ in our dataset. In the future it might be interesting to look at the effect of precipitations as well, but in the available dataset the number of observations with precipitation not equal to zero is to little to be significant.
 
+<br>
+
 ### Regression with all variables
 
 At first we build a regression model with all variables available in the data tables in order to understand the impact each one has on the level of NO~2~ recorded. The model is as below.
@@ -636,6 +652,8 @@ At first we build a regression model with all variables available in the data ta
 ```{r no2regressall, echo=TRUE}
 rmodel <- lm(NO2~., data=daily_data_pp)
 ```
+
+<br>
 
 The 95% confidence intervals for coefficients of all the variables are:
 
@@ -659,6 +677,8 @@ confint(rmodel,parm = 'TCH', level = 0.95)
 confint(rmodel,parm = 'TOL', level = 0.95)
 ```
 
+<br>
+
 The residuals are:
 
 ``````{r no2regressallplots, echo=TRUE}
@@ -669,9 +689,13 @@ qqnorm(rmodel$residuals); grid()
 boxplot(rmodel$residuals,main='boxplot'); grid()
 ```
 
+<br>
+
 ### Regression only with weather parameters
 
 Next we build a regression model and a function wrapper over it as it will be called several times with same variables. This model considers only the average temperature for each day and the wind speed. The minimum temperature is not included as we find from the previous regression that the value for coefficient is statistically inconclusive. In that case, we can use just one of maximum temperature or average temperature. We proceed with average temperature as it will have a similar effect as maximum temperature but will avoid certain outliers. Further, we do not consider precipitation as from the correletation plots shown before show little or no correlation either with predictor variables or with the target variable.
+
+<br>
 
 #### These regression models are built with data filtered on summer/winter months and workday/restday
 
@@ -697,6 +721,9 @@ check_weather_model <- function(data_table_list) {
 }
 ```
 
+
+<br>
+
 #### Summary and plots from the regression model with weather variables
 
 ```{r no2regressionweatherresults, echo=TRUE}
@@ -710,11 +737,15 @@ list_of_data_tables <- list(summer_workdays, summer_restdays, winter_workdays, w
 # check_weather_model(list_of_data_tables)
 ```
 
+<br>
+
 ##### Results for regression on workdays in summer
 
 ```{r no2regressionsummerworkdayresults, echo=TRUE}
 check_weather_model(list(summer_workdays))
 ```
+
+<br>
 
 ##### Results for regression on restdays in summer
 
@@ -722,11 +753,15 @@ check_weather_model(list(summer_workdays))
 check_weather_model(list(summer_restdays))
 ```
 
+<br>
+
 ##### Results for regression on workdays in winter
 
 ```{r no2regressionwinterworkdayresults, echo=TRUE}
 check_weather_model(list(winter_workdays))
 ```
+
+<br>
 
 ##### Results for regression on restdays in winter
 
@@ -734,10 +769,14 @@ check_weather_model(list(winter_workdays))
 check_weather_model(list(winter_restdays))
 ```
 
+***
+
 ## Conclusions
 
 There is a seasonality in the recorded pollution levels and variations are observed which follow a yearly, monthly, weekly or daily pattern. Also, there is are significant differences on working days versus holidays. The separated data sets for working days and holidays follow the trends mentioned earlier. The observations during summer are much lesser than the ones for winter months. There could be two reasons for this. First is the inherent characteristics of gases. All measured pollutants are in a gaseous form and the measurement method records weight of pollutant per unit volume of air. Gases have lower densities at higher temperatures so the values recorded during summer months must be lower. Second, behaviour of population in Madrid is different during summer months than during winter months. In winters, people might be consuming more fuels for heating purposes. Accounting for these two differences with seasons, there is a possibility of building more accurate prediction models.
 Having said that, the current regression model accounting for known weather parameters shows that the R-squared for winter days hovers at 0.39 and for summer days at 0.13. The correlation plots seen earlier suggest multiple variable which are correlated with each other and also with NO~2~. Mostly these are from two major sources of pollution. Thus, the current regression model focusses on studying the impact of weather conditions on the measure NO~2~ concentration. The low R-square value is acceptable as we are not considering all factors which affect the measure NO~2~ levels. Furthermore, the value for summer days is much lesser suggesting that this model is better at predicting values during winter days than during summer days. Further data related to pollution, human behaviour, and other weather parameters should prove helpful in increasing the prediction results of similar models.
+
+***
 
 ## Future developments
 Ideas on how to improve the quality of the analysis and possible future directions are here presented.
