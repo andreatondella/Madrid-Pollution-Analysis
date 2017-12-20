@@ -677,7 +677,7 @@ Next we build a regression model and a function wrapper over it as it will be ca
 
 ```{r no2regressionfunction, echo=TRUE}
 check_weather_model <- function(data_table_list) {
-  par(mfrow=c(length(data_table_list),4))
+  #par(mfrow=c(4,4))
   lapply(data_table_list, function(x) {
     linear_model <- lm(NO2~temp_avg + wind_avg_speed, data = x)
     print(summary(linear_model))
@@ -707,10 +707,32 @@ winter_workdays <- daily_data_pp[!(month(ob_date) %in% summer_months) & (workday
 winter_restdays <- daily_data_pp[!(month(ob_date) %in% summer_months) & (workday == F) & !is.na(NO2)]
 
 list_of_data_tables <- list(summer_workdays, summer_restdays, winter_workdays, winter_restdays)
-length(list_of_data_tables)
-check_weather_model(list_of_data_tables)
+# check_weather_model(list_of_data_tables)
 ```
 
+##### Results for regression on workdays in summer
+
+```{r no2regressionsummerworkdayresults, echo=TRUE}
+check_weather_model(list(summer_workdays))
+```
+
+##### Results for regression on restdays in summer
+
+```{r no2regressionsummerrestdayresults, echo=TRUE}
+check_weather_model(list(summer_restdays))
+```
+
+##### Results for regression on workdays in winter
+
+```{r no2regressionwinterworkdayresults, echo=TRUE}
+check_weather_model(list(winter_workdays))
+```
+
+##### Results for regression on restdays in winter
+
+```{r no2regressionwinterrestdayresults, echo=TRUE}
+check_weather_model(list(winter_restdays))
+```
 ## Conclusions
 
 ## Future developments
